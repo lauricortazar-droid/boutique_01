@@ -1,0 +1,6 @@
+{
+  "name": "Guerreros de la Luz - Boutique Espiritual",
+  "description": "Gestión de encargos, catálogo esotérico y pedidos para la boutique espiritual Guerreros de la Luz con sincronización a Google Workspace.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
