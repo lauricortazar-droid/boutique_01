@@ -15,7 +15,8 @@ import {
   Truck,
   Menu,
   X,
-  Lock
+  Lock,
+  Database
 } from 'lucide-react';
 import { User } from 'firebase/auth';
 import { BoutiqueSettings, UserRole } from '../types';
@@ -34,6 +35,7 @@ interface NavbarProps {
   onOpenNewOrder: () => void;
   onOpenPortal?: () => void;
   onLockAdmin?: () => void;
+  onOpenCloudSync?: () => void;
   settings: BoutiqueSettings;
   currentRole: UserRole;
   onChangeRole: (role: UserRole) => void;
@@ -53,6 +55,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenNewOrder,
   onOpenPortal,
   onLockAdmin,
+  onOpenCloudSync,
   settings,
   currentRole,
   onChangeRole
@@ -108,6 +111,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Search className="h-3.5 w-3.5 text-amber-400" />
               <span className="hidden md:inline text-[11px] text-slate-400">Búsqueda rápida...</span>
             </button>
+
+            {/* Cloud Sync Database Button */}
+            {onOpenCloudSync && (
+              <button
+                onClick={onOpenCloudSync}
+                className="flex items-center gap-1.5 rounded-xl border border-sky-500/30 bg-sky-950/30 px-2.5 py-1.5 text-xs font-semibold text-sky-300 hover:bg-sky-900/50 hover:border-sky-500/50 transition cursor-pointer"
+                title="Base de datos local, Fires & Google Drive (torresloidy42@gmail.con)"
+              >
+                <Database className="h-3.5 w-3.5 text-sky-400" />
+                <span className="hidden xl:inline">Fires & Drive</span>
+              </button>
+            )}
 
             {/* Switch to Public Portal Button */}
             {onOpenPortal && (

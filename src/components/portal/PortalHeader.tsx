@@ -10,16 +10,20 @@ import {
   X, 
   LayoutDashboard,
   Clock,
-  ArrowRight
+  ArrowRight,
+  ClipboardList,
+  Database,
+  Users
 } from 'lucide-react';
 import { BoutiqueSettings, CartItem } from '../../types';
 
 interface PortalHeaderProps {
-  currentPortalTab: 'home' | 'catalog' | 'anniversary' | 'tracker';
-  setCurrentPortalTab: (tab: 'home' | 'catalog' | 'anniversary' | 'tracker') => void;
+  currentPortalTab: 'home' | 'catalog' | 'anniversary' | 'tracker' | 'bulk-order';
+  setCurrentPortalTab: (tab: 'home' | 'catalog' | 'anniversary' | 'tracker' | 'bulk-order') => void;
   cartItems: CartItem[];
   onOpenCart: () => void;
   onOpenTracker: () => void;
+  onOpenCloudSync: () => void;
   onSwitchToAdmin: () => void;
   settings: BoutiqueSettings;
   searchQuery: string;
@@ -32,6 +36,7 @@ export const PortalHeader: React.FC<PortalHeaderProps> = ({
   cartItems,
   onOpenCart,
   onOpenTracker,
+  onOpenCloudSync,
   onSwitchToAdmin,
   settings,
   searchQuery,
@@ -151,10 +156,35 @@ export const PortalHeader: React.FC<PortalHeaderProps> = ({
             <FileSearch className="h-3.5 w-3.5 text-blue-400" />
             <span>Rastrear Pedido</span>
           </button>
+
+          {/* New Tab: Pedido Largo / Servidores */}
+          <button
+            onClick={() => setCurrentPortalTab('bulk-order')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+              currentPortalTab === 'bulk-order'
+                ? 'bg-amber-500 text-slate-950 font-bold shadow-md shadow-amber-500/20'
+                : 'text-amber-400 hover:bg-amber-500/10 border border-amber-500/30'
+            }`}
+            title="Llenar tabla de pedido largo para Alabanza, Ujieres o grupos"
+          >
+            <Users className="h-3.5 w-3.5" />
+            <span>Pedido de Servidores</span>
+          </button>
         </nav>
 
-        {/* Right Actions: Search, WhatsApp, Cart, Admin Switcher */}
+        {/* Right Actions: Search, WhatsApp, Cart, Cloud Sync, Admin Switcher */}
         <div className="flex items-center gap-2">
+          
+          {/* Quick Cloud DB Sync Button */}
+          <button
+            type="button"
+            onClick={onOpenCloudSync}
+            className="hidden sm:flex items-center gap-1.5 rounded-xl border border-sky-500/30 bg-sky-950/30 px-2.5 py-1.5 text-[11px] font-semibold text-sky-300 hover:bg-sky-900/40 hover:border-sky-500/50 transition cursor-pointer"
+            title="Base de datos local, sincronización con Fires & Google Drive (torresloidy42@gmail.con)"
+          >
+            <Database className="h-3.5 w-3.5 text-sky-400" />
+            <span className="hidden lg:inline">Fires & Drive</span>
+          </button>
           
           {/* Quick Search Bar (Desktop) */}
           <div className="relative hidden lg:block w-48 xl:w-56">
@@ -326,9 +356,36 @@ export const PortalHeader: React.FC<PortalHeaderProps> = ({
               <FileSearch className="h-4 w-4 text-blue-400" />
               <span>Rastrear Pedido / Consultar Estado</span>
             </button>
+
+            {/* Pedido de Servidores (Mobile) */}
+            <button
+              onClick={() => {
+                setCurrentPortalTab('bulk-order');
+                setMobileMenuOpen(false);
+              }}
+              className={`flex items-center gap-2 p-2.5 rounded-xl text-xs font-bold col-span-2 ${
+                currentPortalTab === 'bulk-order'
+                  ? 'bg-amber-500 text-slate-950 font-black'
+                  : 'bg-amber-950/40 text-amber-300 border border-amber-500/30'
+              }`}
+            >
+              <Users className="h-4 w-4" />
+              <span>Pedido de Servidores (Tabla de Pedido Largo)</span>
+            </button>
           </div>
 
           <div className="pt-2 border-t border-slate-800 flex flex-col gap-2">
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenCloudSync();
+              }}
+              className="flex items-center justify-center gap-2 rounded-xl bg-sky-950/50 border border-sky-500/40 py-2 text-xs font-semibold text-sky-300"
+            >
+              <Database className="h-4 w-4 text-sky-400" />
+              <span>Base de Datos, Fires & Drive (torresloidy42@gmail.con)</span>
+            </button>
+
             <a
               href={whatsappUrl}
               target="_blank"

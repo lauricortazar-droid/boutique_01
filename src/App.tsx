@@ -86,6 +86,8 @@ import { RegisterPaymentModal } from './components/RegisterPaymentModal';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { ConfirmModal } from './components/ConfirmModal';
 import { AdminPasscodeModal } from './components/AdminPasscodeModal';
+import { CloudDatabaseSyncModal } from './components/CloudDatabaseSyncModal';
+import { DatabaseSnapshot } from './services/cloudDatabaseService';
 import { AlertCircle, CheckCircle2, Sparkles, X, ShoppingBag, LayoutDashboard } from 'lucide-react';
 
 export default function App() {
@@ -243,6 +245,19 @@ export default function App() {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const [isGlobalSearchOpen, setIsGlobalSearchOpen] = useState(false);
+  const [isCloudSyncModalOpen, setIsCloudSyncModalOpen] = useState(false);
+
+  const handleRestoreDatabase = (snapshot: DatabaseSnapshot) => {
+    if (!snapshot || !snapshot.data) return;
+    const d = snapshot.data;
+    if (Array.isArray(d.products)) setProducts(d.products);
+    if (Array.isArray(d.categories)) setCategories(d.categories);
+    if (Array.isArray(d.orders)) setOrders(d.orders);
+    if (Array.isArray(d.customers)) setCustomers(d.customers);
+    if (Array.isArray(d.suppliers)) setSuppliers(d.suppliers);
+    if (Array.isArray(d.movements)) setMovements(d.movements);
+    if (d.settings) setSettings(getSafeBoutiqueSettings(d.settings));
+  };
 
   // Confirmation Modal
   const [confirmConfig, setConfirmConfig] = useState<{
@@ -893,6 +908,7 @@ export default function App() {
           settings={getSafeBoutiqueSettings(settings)}
           onSaveOrderFromPortal={handleSaveOrderFromPortal}
           onSwitchToAdmin={() => handleSwitchMode('admin')}
+          onOpenCloudSync={() => setIsCloudSyncModalOpen(true)}
           showNotification={showNotification}
         />
 
@@ -943,6 +959,22 @@ export default function App() {
           isOpen={isAdminAuthModalOpen}
           onClose={() => setIsAdminAuthModalOpen(false)}
           onSuccess={handleAdminAuthSuccess}
+        />
+
+        {/* Cloud Database Sync & Management Modal */}
+        <CloudDatabaseSyncModal
+          isOpen={isCloudSyncModalOpen}
+          onClose={() => setIsCloudSyncModalOpen(false)}
+          products={products}
+          orders={orders}
+          customers={customers}
+          categories={categories}
+          suppliers={suppliers}
+          movements={movements}
+          settings={settings}
+          onRestoreDatabase={handleRestoreDatabase}
+          showNotification={showNotification}
+          currentUserEmail={user?.email || null}
         />
       </div>
     );
@@ -1011,6 +1043,7 @@ export default function App() {
         }}
         onOpenPortal={() => handleSwitchMode('portal')}
         onLockAdmin={handleLockAdmin}
+        onOpenCloudSync={() => setIsCloudSyncModalOpen(true)}
         settings={settings}
         currentRole={currentRole}
         onChangeRole={setCurrentRole}
@@ -1317,6 +1350,22 @@ export default function App() {
         isOpen={isAdminAuthModalOpen}
         onClose={() => setIsAdminAuthModalOpen(false)}
         onSuccess={handleAdminAuthSuccess}
+      />
+
+      {/* Cloud Database Sync & Management Modal */}
+      <CloudDatabaseSyncModal
+        isOpen={isCloudSyncModalOpen}
+        onClose={() => setIsCloudSyncModalOpen(false)}
+        products={products}
+        orders={orders}
+        customers={customers}
+        categories={categories}
+        suppliers={suppliers}
+        movements={movements}
+        settings={settings}
+        onRestoreDatabase={handleRestoreDatabase}
+        showNotification={showNotification}
+        currentUserEmail={user?.email || null}
       />
     </div>
   );

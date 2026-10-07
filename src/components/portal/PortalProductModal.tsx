@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { Product, ProductVariant, CartItem, OrderItemCustomization, BoutiqueSettings } from '../../types';
 import { normalizeDriveImageUrl } from '../../utils/driveImageHelper';
+import { DriveImage } from '../DriveImage';
+import { DriveImage } from '../DriveImage';
 
 interface PortalProductModalProps {
   product: Product | null;

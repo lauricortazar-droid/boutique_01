@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Product, Category, BoutiqueSettings, ZoneFGDLL, CartItem } from '../../types';
 import { normalizeDriveImageUrl } from '../../utils/driveImageHelper';
+import { DriveImage } from '../DriveImage';
 
 interface PortalCatalogProps {
   products: Product[];
@@ -276,10 +277,9 @@ export const PortalCatalog: React.FC<PortalCatalogProps> = ({
               >
                 {/* Product Image */}
                 <div className="aspect-square w-full overflow-hidden bg-slate-950 relative">
-                  <img
-                    src={normalizeDriveImageUrl(product.imageUrl)}
+                  <DriveImage
+                    src={product.imageUrl}
                     alt={product.name}
-                    referrerPolicy="no-referrer"
                     className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
 

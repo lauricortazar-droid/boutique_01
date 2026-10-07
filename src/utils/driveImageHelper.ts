@@ -1,10 +1,11 @@
 /**
  * Google Drive Image Helper
- * Converts any Google Drive sharing link (file/d/.../view, open?id=..., etc.)
- * into a direct embeddable image URL for <img> tags.
+ * Converts any Google Drive sharing link into direct embeddable image URLs for <img> tags.
+ * Works seamlessly with Google User Content CDN (lh3.googleusercontent.com)
+ * and Google Drive Thumbnail CDN (drive.google.com/thumbnail).
  */
 
-export const extractDriveFileId = (rawUrl: string): string | null => {
+export const extractDriveFileId = (rawUrl?: string | null): string | null => {
   if (!rawUrl || typeof rawUrl !== 'string') return null;
   const url = rawUrl.trim();
 
@@ -14,14 +15,14 @@ export const extractDriveFileId = (rawUrl: string): string | null => {
     return fileDMatch[1];
   }
 
-  // Pattern 2: https://drive.google.com/open?id=FILE_ID or uc?id=FILE_ID
+  // Pattern 2: https://drive.google.com/open?id=FILE_ID or uc?id=FILE_ID or uc?export=view&id=FILE_ID
   const idQueryMatch = url.match(/[?&]id=([a-zA-Z0-9_-]+)/i);
   if (idQueryMatch && idQueryMatch[1] && (url.includes('drive.google.com') || url.includes('docs.google.com'))) {
     return idQueryMatch[1];
   }
 
-  // Pattern 3: https://lh3.googleusercontent.com/d/FILE_ID
-  const lh3Match = url.match(/lh3\.googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/i);
+  // Pattern 3: https://lh3.googleusercontent.com/d/FILE_ID or /u/0/d/FILE_ID
+  const lh3Match = url.match(/googleusercontent\.com\/(?:d|u\/\d+\/d)\/([a-zA-Z0-9_-]+)/i);
   if (lh3Match && lh3Match[1]) {
     return lh3Match[1];
   }
@@ -35,14 +36,19 @@ export const extractDriveFileId = (rawUrl: string): string | null => {
   return null;
 };
 
-export const isGoogleDriveUrl = (rawUrl: string): boolean => {
+export const isGoogleDriveUrl = (rawUrl?: string | null): boolean => {
   if (!rawUrl) return false;
   return !!extractDriveFileId(rawUrl);
 };
 
+export const isGoogleDriveFolderUrl = (rawUrl?: string | null): boolean => {
+  if (!rawUrl) return false;
+  return rawUrl.includes('drive.google.com/drive/folders');
+};
+
 /**
- * Transforms any Google Drive URL into a direct image URL with high resolution.
- * If not a Drive URL, returns the original URL.
+ * Returns primary direct image URL for Google Drive file.
+ * We use Google's lh3 usercontent CDN which supports direct image rendering in <img> tags.
  */
 export const normalizeDriveImageUrl = (rawUrl?: string | null): string => {
   if (!rawUrl || typeof rawUrl !== 'string') return '';
@@ -51,15 +57,27 @@ export const normalizeDriveImageUrl = (rawUrl?: string | null): string => {
 
   const fileId = extractDriveFileId(trimmed);
   if (fileId) {
-    // sz=w1600 provides high resolution crisp thumbnail directly served by Google's CDN
-    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1600`;
+    // Primary: Google User Content direct embed
+    return `https://lh3.googleusercontent.com/d/${fileId}`;
   }
 
   return trimmed;
 };
 
 /**
- * Alternative fallback using Google User Content CDN
+ * Returns secondary fallback thumbnail URL in case primary fails
+ */
+export const getDriveThumbnailFallbackUrl = (rawUrl?: string | null): string => {
+  if (!rawUrl || typeof rawUrl !== 'string') return '';
+  const fileId = extractDriveFileId(rawUrl);
+  if (fileId) {
+    return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1200`;
+  }
+  return rawUrl;
+};
+
+/**
+ * Returns standard high-resolution CDN URL
  */
 export const getDriveDirectCdnUrl = (rawUrl: string): string => {
   const fileId = extractDriveFileId(rawUrl);

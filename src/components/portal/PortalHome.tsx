@@ -11,7 +11,8 @@ import {
   Phone,
   HeartHandshake,
   Layers,
-  ChevronRight
+  ChevronRight,
+  Users
 } from 'lucide-react';
 import { Product, Category, BoutiqueSettings } from '../../types';
 import { normalizeDriveImageUrl } from '../../utils/driveImageHelper';
@@ -22,6 +23,7 @@ interface PortalHomeProps {
   settings: BoutiqueSettings;
   onNavigateToCatalog: (categorySlug?: string) => void;
   onNavigateToAnniversary: () => void;
+  onNavigateToBulkOrder?: () => void;
   onSelectProduct: (product: Product) => void;
   onOpenTracker: () => void;
 }
@@ -32,6 +34,7 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
   settings,
   onNavigateToCatalog,
   onNavigateToAnniversary,
+  onNavigateToBulkOrder,
   onSelectProduct,
   onOpenTracker
 }) => {
@@ -127,6 +130,19 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
                 </button>
               )}
 
+              {/* Bulk order button */}
+              {onNavigateToBulkOrder && (
+                <button
+                  type="button"
+                  onClick={onNavigateToBulkOrder}
+                  className="flex items-center gap-2 rounded-xl border border-amber-500/50 bg-amber-500/10 px-5 py-3.5 text-xs sm:text-sm font-bold text-amber-300 hover:bg-amber-500/20 transition cursor-pointer"
+                  title="Hacer pedido para Alabanza, Ujieres, Grupos o Ministerios"
+                >
+                  <Users className="h-4 w-4 text-amber-400" />
+                  <span>Pedido de Servidores (Tabla)</span>
+                </button>
+              )}
+
               <button
                 type="button"
                 onClick={onOpenTracker}
@@ -136,6 +152,40 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
               </button>
             </div>
           </div>
+        </section>
+      )}
+
+      {/* SERVICE BULK ORDER CALLOUT BANNER */}
+      {onNavigateToBulkOrder && (
+        <section className="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-slate-900 via-amber-950/20 to-slate-900 p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg">
+          <div className="flex items-start gap-3.5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400">
+              <Users className="h-6 w-6" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20">
+                  Para Alabanza, Ujieres & Grupos
+                </span>
+                <span className="text-xs text-slate-400">Captura Fácil</span>
+              </div>
+              <h3 className="text-base sm:text-lg font-serif font-bold text-slate-100">
+                ¿Vas a hacer un pedido largo para tu equipo o servicio?
+              </h3>
+              <p className="text-xs text-slate-300 max-w-xl">
+                Usa nuestra tabla interactiva para no perder la cuenta. Captura cantidades, productos, géneros, colores, tallas y nombres personalizados, y descarga tu PDF o PNG directo a la galería.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onNavigateToBulkOrder}
+            className="flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2.5 text-xs shadow-md shadow-amber-500/20 transition cursor-pointer shrink-0"
+          >
+            <span>Llenar Tabla de Pedido</span>
+            <ArrowRight className="h-4 w-4" />
+          </button>
         </section>
       )}
 

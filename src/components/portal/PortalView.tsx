@@ -9,7 +9,8 @@ import { PortalOrderTracker } from './PortalOrderTracker';
 import { PortalProductModal } from './PortalProductModal';
 import { PortalCartDrawer } from './PortalCartDrawer';
 import { PortalOrderSuccessModal } from './PortalOrderSuccessModal';
-import { Shield, Phone, Sparkles } from 'lucide-react';
+import { PortalBulkOrderView } from './PortalBulkOrderView';
+import { Shield, Phone, Sparkles, Database, Users } from 'lucide-react';
 
 interface PortalViewProps {
   products: Product[];
@@ -19,6 +20,7 @@ interface PortalViewProps {
   settings: BoutiqueSettings;
   onSaveOrderFromPortal: (order: Order, customer: Customer) => void;
   onSwitchToAdmin: () => void;
+  onOpenCloudSync?: () => void;
   showNotification: (type: 'success' | 'error' | 'info', message: string) => void;
 }
 
@@ -30,12 +32,13 @@ export const PortalView: React.FC<PortalViewProps> = ({
   settings,
   onSaveOrderFromPortal,
   onSwitchToAdmin,
+  onOpenCloudSync,
   showNotification
 }) => {
   const safeSettings = getSafeBoutiqueSettings(settings);
 
   // Navigation inside portal
-  const [currentPortalTab, setCurrentPortalTab] = useState<'home' | 'catalog' | 'anniversary' | 'tracker'>('home');
+  const [currentPortalTab, setCurrentPortalTab] = useState<'home' | 'catalog' | 'anniversary' | 'tracker' | 'bulk-order'>('home');
   const [catalogInitialCategory, setCatalogInitialCategory] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -144,6 +147,7 @@ export const PortalView: React.FC<PortalViewProps> = ({
           setTrackerInitialFolio('');
           setCurrentPortalTab('tracker');
         }}
+        onOpenCloudSync={onOpenCloudSync || (() => {})}
         onSwitchToAdmin={onSwitchToAdmin}
         settings={safeSettings}
         searchQuery={searchQuery}
@@ -162,6 +166,7 @@ export const PortalView: React.FC<PortalViewProps> = ({
               setCurrentPortalTab('catalog');
             }}
             onNavigateToAnniversary={() => setCurrentPortalTab('anniversary')}
+            onNavigateToBulkOrder={() => setCurrentPortalTab('bulk-order')}
             onSelectProduct={product => setSelectedProduct(product)}
             onOpenTracker={() => {
               setTrackerInitialFolio('');
@@ -197,6 +202,17 @@ export const PortalView: React.FC<PortalViewProps> = ({
             orders={orders}
             settings={safeSettings}
             initialFolio={trackerInitialFolio}
+          />
+        )}
+
+        {/* Tab: Pedido Largo / Servidores */}
+        {currentPortalTab === 'bulk-order' && (
+          <PortalBulkOrderView
+            products={products}
+            settings={safeSettings}
+            onSaveOrderFromPortal={onSaveOrderFromPortal}
+            showNotification={showNotification}
+            onNavigateToCatalog={() => setCurrentPortalTab('catalog')}
           />
         )}
       </main>
@@ -249,7 +265,19 @@ export const PortalView: React.FC<PortalViewProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px]">
+          <div className="flex flex-wrap items-center gap-3 text-[11px]">
+            {onOpenCloudSync && (
+              <button
+                type="button"
+                onClick={onOpenCloudSync}
+                className="text-sky-400 hover:text-sky-300 hover:underline flex items-center gap-1 cursor-pointer"
+                title="Sincronizar base de datos con Fires y Google Drive (torresloidy42@gmail.con)"
+              >
+                <Database className="h-3 w-3" />
+                <span>Base de Datos, Fires & Drive</span>
+              </button>
+            )}
+
             <a
               href={`https://wa.me/${safeSettings?.portal?.whatsappCleanNumber || '19993598514'}`}
               target="_blank"
