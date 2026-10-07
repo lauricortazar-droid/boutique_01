@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Product, Category, ProductVariant, ZoneFGDLL, Supplier } from '../types';
-import { X, Plus, Trash2, Image, Sparkles, Check, DollarSign, Eye, EyeOff } from 'lucide-react';
+import { X, Plus, Trash2, Image, Sparkles, Check, DollarSign, Eye, EyeOff, Cloud, HelpCircle, CheckCircle2 } from 'lucide-react';
+import { normalizeDriveImageUrl, isGoogleDriveUrl } from '../utils/driveImageHelper';
 
 interface ProductEditModalProps {
   product: Product | null;
@@ -48,6 +49,7 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
   const [imageUrl, setImageUrl] = useState(product?.imageUrl || PRESET_IMAGES[0].url);
   const [galleryImages, setGalleryImages] = useState<string[]>(product?.galleryImages || []);
   const [newGalleryInput, setNewGalleryInput] = useState('');
+  const [showDriveHelp, setShowDriveHelp] = useState(false);
   
   const [active, setActive] = useState(product ? product.active : true);
   const [visibleInPortal, setVisibleInPortal] = useState(product ? product.visibleInPortal !== false : true);
@@ -98,7 +100,8 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
 
   const handleAddGalleryImage = () => {
     if (!newGalleryInput.trim()) return;
-    setGalleryImages([...galleryImages, newGalleryInput.trim()]);
+    const cleanUrl = normalizeDriveImageUrl(newGalleryInput.trim());
+    setGalleryImages([...galleryImages, cleanUrl]);
     setNewGalleryInput('');
   };
 
@@ -123,8 +126,8 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
       stock: Number(stock) || 0,
       reservedStock: product?.reservedStock || 0,
       minStock: Number(minStock) || 5,
-      imageUrl: imageUrl.trim(),
-      galleryImages: galleryImages.length > 0 ? galleryImages : undefined,
+      imageUrl: normalizeDriveImageUrl(imageUrl.trim()),
+      galleryImages: galleryImages.length > 0 ? galleryImages.map(img => normalizeDriveImageUrl(img)) : undefined,
       active,
       visibleInPortal,
       isCustomizable,
@@ -289,22 +292,63 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
             </div>
           </div>
 
-          {/* Image & Presets */}
+          {/* Image & Presets with Google Drive Support */}
           <div className="rounded-xl bg-slate-950/70 p-3.5 border border-slate-800 space-y-3">
-            <span className="font-semibold uppercase tracking-wider text-amber-300 text-[11px] flex items-center gap-1.5">
-              <Image className="h-3.5 w-3.5 text-amber-400" /> Imágenes y Fotografías del Producto
-            </span>
+            <div className="flex items-center justify-between">
+              <span className="font-semibold uppercase tracking-wider text-amber-300 text-[11px] flex items-center gap-1.5">
+                <Image className="h-3.5 w-3.5 text-amber-400" /> Imágenes y Fotografías del Producto
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowDriveHelp(!showDriveHelp)}
+                className="text-[11px] text-amber-400 hover:text-amber-300 hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <Cloud className="h-3.5 w-3.5 text-sky-400" />
+                <span>¿Cómo usar fotos de Google Drive?</span>
+              </button>
+            </div>
+
+            {/* Google Drive Guide Box */}
+            {showDriveHelp && (
+              <div className="rounded-xl border border-sky-500/30 bg-sky-950/30 p-3 text-xs text-sky-200 animate-in fade-in duration-200 space-y-1.5">
+                <p className="font-bold text-sky-300 flex items-center gap-1.5">
+                  <Cloud className="h-4 w-4 text-sky-400" /> Usar fotos alojadas en Google Drive:
+                </p>
+                <ol className="list-decimal list-inside space-y-1 text-[11px] text-slate-300 leading-relaxed pl-1">
+                  <li>Sube tu foto a tu carpeta de Google Drive.</li>
+                  <li>Haz clic derecho en la imagen &rarr; <span className="font-semibold text-sky-200">Compartir</span> &rarr; En <em>Acceso general</em> selecciona <strong className="text-amber-300">"Cualquier persona con el enlace"</strong> (Lector).</li>
+                  <li>Copia el enlace de compartir y <strong className="text-emerald-300">pégalo directamente aquí</strong>.</li>
+                </ol>
+                <p className="text-[10px] text-sky-400 italic">
+                  ✓ El sistema extrae el identificador del archivo automáticamente y genera la visualización directa para el portal y catálogo sin necesidad de abrir la pestaña de Drive.
+                </p>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
               <div className="sm:col-span-2 space-y-2">
-                <label className="block text-slate-400 text-[11px]">URL de Imagen Principal *</label>
+                <div className="flex items-center justify-between">
+                  <label className="block text-slate-400 text-[11px]">URL de Imagen Principal *</label>
+                  {isGoogleDriveUrl(imageUrl) && (
+                    <span className="flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2 py-0.5 rounded-full font-medium">
+                      <CheckCircle2 className="h-3 w-3" /> Google Drive vinculado
+                    </span>
+                  )}
+                </div>
                 <input
                   type="url"
                   required
                   value={imageUrl}
-                  onChange={e => setImageUrl(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-slate-200 focus:border-amber-500 focus:outline-hidden"
+                  onChange={e => {
+                    const val = e.target.value;
+                    if (isGoogleDriveUrl(val)) {
+                      setImageUrl(normalizeDriveImageUrl(val));
+                    } else {
+                      setImageUrl(val);
+                    }
+                  }}
+                  placeholder="Pega link de Drive (https://drive.google.com/file/d/...) o Unsplash"
+                  className="w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-slate-200 focus:border-amber-500 focus:outline-hidden text-xs"
                 />
 
                 {/* Preset Suggestions */}
@@ -316,7 +360,7 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
                         key={idx}
                         type="button"
                         onClick={() => setImageUrl(preset.url)}
-                        className="rounded bg-slate-800 hover:bg-slate-700 px-2 py-0.5 text-[10px] text-slate-300 border border-slate-700"
+                        className="rounded bg-slate-800 hover:bg-slate-700 px-2 py-0.5 text-[10px] text-slate-300 border border-slate-700 cursor-pointer"
                       >
                         {preset.label}
                       </button>
@@ -327,8 +371,9 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
 
               <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-900 border border-slate-800">
                 <img
-                  src={imageUrl}
+                  src={normalizeDriveImageUrl(imageUrl)}
                   alt="Vista previa"
+                  referrerPolicy="no-referrer"
                   className="h-20 w-20 rounded-xl object-cover border border-amber-500/40"
                   onError={e => {
                     (e.target as any).src = PRESET_IMAGES[0].url;
@@ -340,19 +385,28 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
 
             {/* Gallery Images */}
             <div className="pt-2 border-t border-slate-800/80 space-y-2">
-              <label className="block text-slate-400 text-[11px]">Imágenes Adicionales de Galería (opcional):</label>
+              <label className="block text-slate-400 text-[11px]">
+                Imágenes Adicionales de Galería (opcional, soporta enlaces de Drive):
+              </label>
               <div className="flex gap-2">
                 <input
                   type="url"
-                  placeholder="Añadir URL de foto secundaria..."
+                  placeholder="Pega link de foto secundaria (Google Drive, etc.)..."
                   value={newGalleryInput}
-                  onChange={e => setNewGalleryInput(e.target.value)}
+                  onChange={e => {
+                    const val = e.target.value;
+                    if (isGoogleDriveUrl(val)) {
+                      setNewGalleryInput(normalizeDriveImageUrl(val));
+                    } else {
+                      setNewGalleryInput(val);
+                    }
+                  }}
                   className="flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-slate-200 text-xs"
                 />
                 <button
                   type="button"
                   onClick={handleAddGalleryImage}
-                  className="rounded-lg bg-slate-800 px-3 py-1.5 font-bold text-amber-300 hover:bg-slate-700 border border-slate-700"
+                  className="rounded-lg bg-slate-800 px-3 py-1.5 font-bold text-amber-300 hover:bg-slate-700 border border-slate-700 cursor-pointer text-xs"
                 >
                   + Añadir Foto
                 </button>
@@ -362,11 +416,17 @@ export const ProductEditModal: React.FC<ProductEditModalProps> = ({
                 <div className="flex gap-2 overflow-x-auto py-1">
                   {galleryImages.map((img, i) => (
                     <div key={i} className="relative h-14 w-14 rounded-lg overflow-hidden border border-slate-700 shrink-0 group">
-                      <img src={img} alt="Galería" className="h-full w-full object-cover" />
+                      <img 
+                        src={normalizeDriveImageUrl(img)} 
+                        alt="Galería" 
+                        referrerPolicy="no-referrer"
+                        className="h-full w-full object-cover" 
+                      />
                       <button
                         type="button"
                         onClick={() => handleRemoveGalleryImage(i)}
-                        className="absolute inset-0 bg-rose-950/80 text-rose-300 opacity-0 group-hover:opacity-100 flex items-center justify-center transition"
+                        className="absolute inset-0 bg-rose-950/80 text-rose-300 opacity-0 group-hover:opacity-100 flex items-center justify-center transition cursor-pointer"
+                        title="Eliminar foto"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

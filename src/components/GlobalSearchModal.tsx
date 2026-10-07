@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Customer, Order, Product } from '../types';
 import { Search, X, User, ShoppingBag, Scroll, ArrowRight, Phone, Shield } from 'lucide-react';
+import { normalizeDriveImageUrl } from '../utils/driveImageHelper';
 
 interface GlobalSearchModalProps {
   isOpen: boolean;
@@ -187,8 +188,9 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                       >
                         <div className="flex items-center gap-3">
                           <img
-                            src={p.imageUrl}
+                            src={normalizeDriveImageUrl(p.imageUrl)}
                             alt={p.name}
+                            referrerPolicy="no-referrer"
                             className="h-10 w-10 rounded-lg object-cover border border-slate-700 shrink-0"
                           />
                           <div>

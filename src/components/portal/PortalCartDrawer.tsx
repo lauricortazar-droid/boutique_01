@@ -25,6 +25,7 @@ import {
   DeliveryMethod, 
   OrderItem 
 } from '../../types';
+import { normalizeDriveImageUrl } from '../../utils/driveImageHelper';
 
 interface PortalCartDrawerProps {
   isOpen: boolean;
@@ -240,8 +241,9 @@ export const PortalCartDrawer: React.FC<PortalCartDrawerProps> = ({
                     className="p-3 rounded-xl border border-slate-800 bg-slate-950 flex gap-3 relative group"
                   >
                     <img
-                      src={item.product.imageUrl}
+                      src={normalizeDriveImageUrl(item.product.imageUrl)}
                       alt={item.product.name}
+                      referrerPolicy="no-referrer"
                       className="h-16 w-16 rounded-lg object-cover bg-slate-900 border border-slate-800 shrink-0"
                     />
 

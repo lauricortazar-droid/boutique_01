@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Order, Product, Customer } from '../types';
+import { normalizeDriveImageUrl } from '../utils/driveImageHelper';
 import { 
   Plus, 
   ShoppingBag, 
@@ -303,7 +304,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     className="flex items-center justify-between gap-3 rounded-xl border border-slate-800/80 bg-slate-950/60 p-3"
                   >
                     <div className="flex items-center gap-2.5">
-                      <img src={p.imageUrl} alt="" className="h-9 w-9 rounded-lg object-cover border border-slate-700" />
+                      <img 
+                        src={normalizeDriveImageUrl(p.imageUrl)} 
+                        alt="" 
+                        referrerPolicy="no-referrer"
+                        className="h-9 w-9 rounded-lg object-cover border border-slate-700" 
+                      />
                       <div>
                         <span className="font-mono text-[10px] text-slate-400">{p.sku}</span>
                         <h4 className="text-xs font-semibold text-slate-200 line-clamp-1">{p.name}</h4>

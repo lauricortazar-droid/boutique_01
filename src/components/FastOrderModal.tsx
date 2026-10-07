@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Customer, Order, OrderItem, Product, ProductVariant, ZoneFGDLL, DeliveryMethod } from '../types';
+import { normalizeDriveImageUrl } from '../utils/driveImageHelper';
 import { 
   X, 
   Search, 
@@ -473,7 +474,12 @@ export const FastOrderModal: React.FC<FastOrderModalProps> = ({
                           }}
                           className="flex items-center gap-2.5 rounded-lg border border-slate-800 bg-slate-900 p-2 text-left hover:border-amber-500/50 hover:bg-slate-800 transition cursor-pointer"
                         >
-                          <img src={p.imageUrl} alt="" className="h-9 w-9 rounded object-cover border border-slate-700 shrink-0" />
+                          <img 
+                            src={normalizeDriveImageUrl(p.imageUrl)} 
+                            alt="" 
+                            referrerPolicy="no-referrer"
+                            className="h-9 w-9 rounded object-cover border border-slate-700 shrink-0" 
+                          />
                           <div className="flex-1 overflow-hidden">
                             <p className="font-semibold text-slate-200 truncate">{p.name}</p>
                             <span className="text-[10px] text-amber-300 font-mono">${p.price.toFixed(2)} &bull; Disp: {p.stock - p.reservedStock}</span>
@@ -486,7 +492,12 @@ export const FastOrderModal: React.FC<FastOrderModalProps> = ({
                   <div className="rounded-lg border border-amber-500/40 bg-slate-900 p-3 space-y-2.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <img src={selectedProductToAdd.imageUrl} alt="" className="h-8 w-8 rounded object-cover" />
+                        <img 
+                          src={normalizeDriveImageUrl(selectedProductToAdd.imageUrl)} 
+                          alt="" 
+                          referrerPolicy="no-referrer"
+                          className="h-8 w-8 rounded object-cover" 
+                        />
                         <div>
                           <p className="font-bold text-slate-100">{selectedProductToAdd.name}</p>
                           <span className="text-[10px] text-slate-400 font-mono">{selectedProductToAdd.sku}</span>

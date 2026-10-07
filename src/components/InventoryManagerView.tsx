@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Product, InventoryMovement } from '../types';
+import { normalizeDriveImageUrl } from '../utils/driveImageHelper';
 import { 
   Package, 
   Plus, 
@@ -137,8 +138,9 @@ export const InventoryManagerView: React.FC<InventoryManagerViewProps> = ({
             >
               <div className="flex items-center gap-3">
                 <img
-                  src={p.imageUrl}
+                  src={normalizeDriveImageUrl(p.imageUrl)}
                   alt=""
+                  referrerPolicy="no-referrer"
                   className="h-12 w-12 rounded-xl object-cover border border-slate-700 bg-slate-950 shrink-0"
                 />
                 <div>

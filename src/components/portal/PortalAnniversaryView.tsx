@@ -10,6 +10,7 @@ import {
   AlertCircle 
 } from 'lucide-react';
 import { Product, BoutiqueSettings, CartItem } from '../../types';
+import { normalizeDriveImageUrl } from '../../utils/driveImageHelper';
 
 interface PortalAnniversaryViewProps {
   products: Product[];
@@ -52,6 +53,14 @@ export const PortalAnniversaryView: React.FC<PortalAnniversaryViewProps> = ({
     <div className="space-y-8 pb-16">
       {/* Hero Banner with commemorative visual */}
       <div className="relative rounded-3xl overflow-hidden border border-amber-500/50 bg-gradient-to-br from-amber-950/70 via-slate-950 to-slate-900 p-6 sm:p-12 shadow-2xl">
+        {anniversary.bannerImageUrl && (
+          <img
+            src={normalizeDriveImageUrl(anniversary.bannerImageUrl)}
+            alt="Fondo Aniversario"
+            referrerPolicy="no-referrer"
+            className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-luminosity pointer-events-none"
+          />
+        )}
         <div className="relative z-10 max-w-3xl space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/20 border border-amber-500/40 px-3 py-1 text-xs font-black tracking-wider text-amber-300 uppercase">
             <Sparkles className="h-3.5 w-3.5" />
@@ -131,8 +140,9 @@ export const PortalAnniversaryView: React.FC<PortalAnniversaryViewProps> = ({
                 >
                   <div className="aspect-square w-full overflow-hidden bg-slate-950 relative">
                     <img
-                      src={product.imageUrl}
+                      src={normalizeDriveImageUrl(product.imageUrl)}
                       alt={product.name}
+                      referrerPolicy="no-referrer"
                       className="h-full w-full object-cover group-hover:scale-105 transition duration-300"
                     />
 

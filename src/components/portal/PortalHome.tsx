@@ -14,6 +14,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { Product, Category, BoutiqueSettings } from '../../types';
+import { normalizeDriveImageUrl } from '../../utils/driveImageHelper';
 
 interface PortalHomeProps {
   products: Product[];
@@ -173,8 +174,9 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
                 className="group rounded-2xl border border-slate-800 bg-slate-950/80 p-3 hover:border-amber-500/40 transition flex gap-3 cursor-pointer"
               >
                 <img
-                  src={product.imageUrl}
+                  src={normalizeDriveImageUrl(product.imageUrl)}
                   alt={product.name}
+                  referrerPolicy="no-referrer"
                   className="h-24 w-24 rounded-xl object-cover bg-slate-900 border border-slate-800 shrink-0 group-hover:scale-105 transition"
                 />
                 <div className="flex-1 flex flex-col justify-between min-w-0">
@@ -281,8 +283,9 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
               >
                 <div className="aspect-square w-full overflow-hidden bg-slate-950 relative">
                   <img
-                    src={product.imageUrl}
+                    src={normalizeDriveImageUrl(product.imageUrl)}
                     alt={product.name}
+                    referrerPolicy="no-referrer"
                     className="h-full w-full object-cover group-hover:scale-105 transition duration-300"
                   />
                   {product.isAnniversary && (
@@ -358,8 +361,9 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
                 className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 hover:border-indigo-400/40 transition flex gap-3 cursor-pointer group"
               >
                 <img
-                  src={p.imageUrl}
+                  src={normalizeDriveImageUrl(p.imageUrl)}
                   alt={p.name}
+                  referrerPolicy="no-referrer"
                   className="h-20 w-20 rounded-xl object-cover bg-slate-900 border border-slate-800 shrink-0"
                 />
                 <div className="flex-1 flex flex-col justify-between">

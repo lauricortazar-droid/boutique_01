@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Product, Category } from '../types';
+import { normalizeDriveImageUrl } from '../utils/driveImageHelper';
 import { 
   Search, 
   Plus, 
@@ -147,8 +148,9 @@ export const CatalogManagerView: React.FC<CatalogManagerViewProps> = ({
                   {/* Photo & SKU */}
                   <div className="relative h-40 w-full overflow-hidden rounded-xl border border-slate-800 bg-slate-950 mb-3">
                     <img
-                      src={p.imageUrl}
+                      src={normalizeDriveImageUrl(p.imageUrl)}
                       alt={p.name}
+                      referrerPolicy="no-referrer"
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                       onError={e => {
                         (e.target as any).src = 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500&auto=format&fit=crop&q=60';

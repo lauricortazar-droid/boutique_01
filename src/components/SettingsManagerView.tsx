@@ -15,8 +15,11 @@ import {
   Phone, 
   Image,
   Eye,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Cloud,
+  CheckCircle2
 } from 'lucide-react';
+import { normalizeDriveImageUrl, isGoogleDriveUrl } from '../utils/driveImageHelper';
 
 interface SettingsManagerViewProps {
   settings: BoutiqueSettings;
@@ -144,7 +147,7 @@ export const SettingsManagerView: React.FC<SettingsManagerViewProps> = ({
           heroSubtitle: anniversarySubtitle.trim(),
           deadlineDate: `${deadlineDate}T23:59:59Z`,
           estimatedDeliveryDate: `${deliveryDate}T12:00:00Z`,
-          bannerImageUrl: bannerImageUrl.trim()
+          bannerImageUrl: normalizeDriveImageUrl(bannerImageUrl.trim())
         }
       }
     };
@@ -640,14 +643,42 @@ export const SettingsManagerView: React.FC<SettingsManagerViewProps> = ({
               />
             </div>
 
-            <div>
-              <label className="block text-slate-400 mb-1">URL de Imagen de Fondo / Banner</label>
-              <input
-                type="url"
-                value={bannerImageUrl}
-                onChange={e => setBannerImageUrl(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-200"
-              />
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="block text-slate-400 text-xs">URL de Imagen de Fondo / Banner (compatible con Drive)</label>
+                {isGoogleDriveUrl(bannerImageUrl) && (
+                  <span className="flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 px-2 py-0.5 rounded-full font-medium">
+                    <CheckCircle2 className="h-3 w-3" /> Google Drive vinculado
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-3 items-center">
+                <input
+                  type="url"
+                  value={bannerImageUrl}
+                  onChange={e => {
+                    const val = e.target.value;
+                    if (isGoogleDriveUrl(val)) {
+                      setBannerImageUrl(normalizeDriveImageUrl(val));
+                    } else {
+                      setBannerImageUrl(val);
+                    }
+                  }}
+                  placeholder="Pega link de Drive (https://drive.google.com/file/d/...) o Unsplash"
+                  className="flex-1 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-slate-200 text-xs"
+                />
+                {bannerImageUrl && (
+                  <img
+                    src={normalizeDriveImageUrl(bannerImageUrl)}
+                    alt="Banner preview"
+                    referrerPolicy="no-referrer"
+                    className="h-10 w-16 object-cover rounded-lg border border-slate-700 shrink-0"
+                    onError={e => {
+                      (e.target as any).style.display = 'none';
+                    }}
+                  />
+                )}
+              </div>
             </div>
           </div>
         )}

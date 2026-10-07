@@ -12,6 +12,7 @@ import {
   Tag
 } from 'lucide-react';
 import { Product, ProductVariant, CartItem, OrderItemCustomization, BoutiqueSettings } from '../../types';
+import { normalizeDriveImageUrl } from '../../utils/driveImageHelper';
 
 interface PortalProductModalProps {
   product: Product | null;
@@ -137,8 +138,9 @@ export const PortalProductModal: React.FC<PortalProductModalProps> = ({
             <div className="space-y-3">
               <div className="aspect-square w-full rounded-xl overflow-hidden bg-slate-950 border border-slate-800 relative">
                 <img
-                  src={activeImage}
+                  src={normalizeDriveImageUrl(activeImage)}
                   alt={product.name}
+                  referrerPolicy="no-referrer"
                   className="h-full w-full object-cover"
                 />
                 {product.isCustomizable && (
@@ -160,7 +162,12 @@ export const PortalProductModal: React.FC<PortalProductModalProps> = ({
                         activeImage === img ? 'border-amber-400' : 'border-slate-800 opacity-60 hover:opacity-100'
                       }`}
                     >
-                      <img src={img} alt="Miniatura" className="h-full w-full object-cover" />
+                      <img 
+                        src={normalizeDriveImageUrl(img)} 
+                        alt="Miniatura" 
+                        referrerPolicy="no-referrer"
+                        className="h-full w-full object-cover" 
+                      />
                     </button>
                   ))}
                 </div>
