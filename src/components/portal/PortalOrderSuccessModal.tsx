@@ -34,10 +34,19 @@ export const PortalOrderSuccessModal: React.FC<PortalOrderSuccessModalProps> = (
   const [copiedClabe, setCopiedClabe] = useState(false);
   const [isGeneratingPng, setIsGeneratingPng] = useState(false);
 
+  const bankDetails = settings?.portal?.bankDetails || {
+    bankName: 'BBVA Bancomer',
+    accountHolder: 'Fraternidad Guerreros de la Luz A.C.',
+    clabe: '012180015523456789',
+    accountNumber: '1552345678',
+    paymentInstructions: 'Usa tu número de pedido como concepto o referencia de transferencia.'
+  };
+  const whatsappCleanNumber = settings?.portal?.whatsappCleanNumber || '19993598514';
+
   const recommendedDeposit = Math.round(order.total * 0.5);
 
   const handleCopyClabe = () => {
-    navigator.clipboard.writeText(settings.portal.bankDetails.clabe);
+    navigator.clipboard.writeText(bankDetails.clabe);
     setCopiedClabe(true);
     setTimeout(() => setCopiedClabe(false), 2500);
   };
@@ -61,7 +70,7 @@ export const PortalOrderSuccessModal: React.FC<PortalOrderSuccessModalProps> = (
     `Por favor confirmar recepción y detalles de pago. ¡Gracias y un abrazo fraterno!`
   );
 
-  const whatsappUrl = `https://wa.me/${settings.portal.whatsappCleanNumber}?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/${whatsappCleanNumber}?text=${whatsappMessage}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto">
@@ -141,9 +150,9 @@ export const PortalOrderSuccessModal: React.FC<PortalOrderSuccessModalProps> = (
           </div>
 
           <div className="text-xs space-y-1 text-slate-300">
-            <p><strong>Banco:</strong> {settings.portal.bankDetails.bankName}</p>
-            <p><strong>Titular:</strong> {settings.portal.bankDetails.accountHolder}</p>
-            <p className="font-mono text-amber-300"><strong>CLABE:</strong> {settings.portal.bankDetails.clabe}</p>
+            <p><strong>Banco:</strong> {bankDetails.bankName}</p>
+            <p><strong>Titular:</strong> {bankDetails.accountHolder}</p>
+            <p className="font-mono text-amber-300"><strong>CLABE:</strong> {bankDetails.clabe}</p>
             <p className="text-[11px] text-amber-400/90 font-medium">
               <strong>Concepto o Referencia:</strong> {order.folio}
             </p>

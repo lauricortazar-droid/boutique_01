@@ -24,7 +24,19 @@ export const PortalAnniversaryView: React.FC<PortalAnniversaryViewProps> = ({
   onSelectProduct,
   onQuickAddToCart
 }) => {
-  const anniversary = settings.portal.anniversary;
+  const anniversary = settings?.portal?.anniversary || {
+    active: true,
+    year: 2026,
+    editionName: 'XVIII ANIVERSARIO',
+    heroTitle: 'XVIII ANIVERSARIO — FRATERNIDAD GUERREROS DE LA LUZ',
+    heroSubtitle: 'Conmemorando 18 años de servicio, fortaleza, disciplina y hermandad. Colección oficial exclusiva de aniversario en preventa.',
+    deadlineDate: '2026-10-25T23:59:59Z',
+    estimatedDeliveryDate: '2026-11-10T12:00:00Z',
+    bannerImageUrl: '',
+    editionNumber: 18,
+    preorderStartDate: '2026-09-01T00:00:00Z',
+    featuredProductIds: []
+  };
   const anniversaryProducts = products.filter(p => p.active && p.visibleInPortal !== false && p.isAnniversary);
 
   // Format dates

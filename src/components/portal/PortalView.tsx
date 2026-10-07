@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Product, Order, Customer, Category, BoutiqueSettings, CartItem } from '../../types';
+import { getSafeBoutiqueSettings } from '../../data/mockDatabase';
 import { PortalHeader } from './PortalHeader';
 import { PortalHome } from './PortalHome';
 import { PortalCatalog } from './PortalCatalog';
@@ -31,6 +32,8 @@ export const PortalView: React.FC<PortalViewProps> = ({
   onSwitchToAdmin,
   showNotification
 }) => {
+  const safeSettings = getSafeBoutiqueSettings(settings);
+
   // Navigation inside portal
   const [currentPortalTab, setCurrentPortalTab] = useState<'home' | 'catalog' | 'anniversary' | 'tracker'>('home');
   const [catalogInitialCategory, setCatalogInitialCategory] = useState<string | undefined>(undefined);
@@ -142,7 +145,7 @@ export const PortalView: React.FC<PortalViewProps> = ({
           setCurrentPortalTab('tracker');
         }}
         onSwitchToAdmin={onSwitchToAdmin}
-        settings={settings}
+        settings={safeSettings}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
@@ -153,7 +156,7 @@ export const PortalView: React.FC<PortalViewProps> = ({
           <PortalHome
             products={products}
             categories={categories}
-            settings={settings}
+            settings={safeSettings}
             onNavigateToCatalog={(categorySlug) => {
               setCatalogInitialCategory(categorySlug);
               setCurrentPortalTab('catalog');
@@ -171,7 +174,7 @@ export const PortalView: React.FC<PortalViewProps> = ({
           <PortalCatalog
             products={products}
             categories={categories}
-            settings={settings}
+            settings={safeSettings}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
             onSelectProduct={product => setSelectedProduct(product)}
@@ -183,7 +186,7 @@ export const PortalView: React.FC<PortalViewProps> = ({
         {currentPortalTab === 'anniversary' && (
           <PortalAnniversaryView
             products={products}
-            settings={settings}
+            settings={safeSettings}
             onSelectProduct={product => setSelectedProduct(product)}
             onQuickAddToCart={handleAddToCart}
           />
@@ -192,7 +195,7 @@ export const PortalView: React.FC<PortalViewProps> = ({
         {currentPortalTab === 'tracker' && (
           <PortalOrderTracker
             orders={orders}
-            settings={settings}
+            settings={safeSettings}
             initialFolio={trackerInitialFolio}
           />
         )}
@@ -204,7 +207,7 @@ export const PortalView: React.FC<PortalViewProps> = ({
         isOpen={!!selectedProduct}
         onClose={() => setSelectedProduct(null)}
         onAddToCart={handleAddToCart}
-        settings={settings}
+        settings={safeSettings}
       />
 
       {/* Shopping Cart Drawer */}
@@ -216,7 +219,7 @@ export const PortalView: React.FC<PortalViewProps> = ({
         onRemoveItem={handleRemoveItem}
         onClearCart={handleClearCart}
         onCompleteOrder={handleCompleteOrder}
-        settings={settings}
+        settings={safeSettings}
         existingCustomers={customers}
       />
 
@@ -226,7 +229,7 @@ export const PortalView: React.FC<PortalViewProps> = ({
         isOpen={isSuccessModalOpen}
         onClose={() => setIsSuccessModalOpen(false)}
         onTrackOrder={handleTrackSpecificOrder}
-        settings={settings}
+        settings={safeSettings}
       />
 
       {/* Footer */}
@@ -238,7 +241,7 @@ export const PortalView: React.FC<PortalViewProps> = ({
             </div>
             <div>
               <p className="font-serif font-bold text-slate-300">
-                {settings.boutiqueName} &bull; Fraternidad Guerreros de la Luz
+                {safeSettings?.boutiqueName || 'Boutique Guerreros de la Luz'} &bull; Fraternidad Guerreros de la Luz
               </p>
               <p className="text-[10px] text-slate-500">
                 Portal Oficial de Pedidos y Suministros para Servidores y Grupos.
@@ -248,12 +251,12 @@ export const PortalView: React.FC<PortalViewProps> = ({
 
           <div className="flex items-center gap-4 text-[11px]">
             <a
-              href={`https://wa.me/${settings.portal.whatsappCleanNumber}`}
+              href={`https://wa.me/${safeSettings?.portal?.whatsappCleanNumber || '19993598514'}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-emerald-400 hover:underline flex items-center gap-1"
             >
-              <Phone className="h-3 w-3" /> WhatsApp: {settings.portal.whatsappNumber}
+              <Phone className="h-3 w-3" /> WhatsApp: {safeSettings?.portal?.whatsappNumber || '+1 999 359 8514'}
             </a>
 
             <button

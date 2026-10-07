@@ -31,6 +31,13 @@ export const PortalOrderTracker: React.FC<PortalOrderTrackerProps> = ({
   const [hasSearched, setHasSearched] = useState(!!initialFolio);
   const [isGeneratingPng, setIsGeneratingPng] = useState(false);
 
+  const whatsappCleanNumber = settings?.portal?.whatsappCleanNumber || '19993598514';
+  const bankDetails = settings?.portal?.bankDetails || {
+    bankName: 'BBVA Bancomer',
+    accountHolder: 'Fraternidad Guerreros de la Luz A.C.',
+    clabe: '012180015523456789'
+  };
+
   const cleanTerm = searchTerm.trim().toLowerCase();
 
   const matchingOrders = cleanTerm
@@ -199,7 +206,7 @@ export const PortalOrderTracker: React.FC<PortalOrderTrackerProps> = ({
                       </button>
 
                       <a
-                        href={`https://wa.me/${settings.portal.whatsappCleanNumber}?text=${encodeURIComponent(
+                        href={`https://wa.me/${whatsappCleanNumber}?text=${encodeURIComponent(
                           `Hola Boutique Guerreros de la Luz, consulto sobre mi pedido Folio *${selectedOrder.folio}* a nombre de *${selectedOrder.customerName}*.`
                         )}`}
                         target="_blank"
@@ -350,8 +357,8 @@ export const PortalOrderTracker: React.FC<PortalOrderTrackerProps> = ({
                           <span className="font-bold text-amber-300 block">
                             Para liquidar tu saldo pendiente:
                           </span>
-                          <p>Transfiere a <strong>{settings.portal.bankDetails.bankName}</strong></p>
-                          <p className="font-mono text-amber-200">CLABE: <strong>{settings.portal.bankDetails.clabe}</strong></p>
+                          <p>Transfiere a <strong>{bankDetails.bankName}</strong></p>
+                          <p className="font-mono text-amber-200">CLABE: <strong>{bankDetails.clabe}</strong></p>
                           <p className="text-[11px] text-slate-400">
                             Concepto: <strong>{selectedOrder.folio}</strong> y envía tu comprobante por WhatsApp.
                           </p>

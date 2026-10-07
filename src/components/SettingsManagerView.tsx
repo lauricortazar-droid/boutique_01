@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BoutiqueSettings, ZoneFGDLL, PortalSectionsConfig } from '../types';
+import { getSafeBoutiqueSettings } from '../data/mockDatabase';
 import { 
   Settings, 
   Save, 
@@ -26,36 +27,36 @@ export const SettingsManagerView: React.FC<SettingsManagerViewProps> = ({
   settings,
   onSaveSettings
 }) => {
+  const safe = getSafeBoutiqueSettings(settings);
+
   const [activeSubTab, setActiveSubTab] = useState<'general' | 'portal' | 'banking' | 'anniversary'>('general');
 
   // General state
-  const [boutiqueName, setBoutiqueName] = useState(settings.boutiqueName);
-  const [subtitle, setSubtitle] = useState(settings.subtitle);
-  const [currencySymbol, setCurrencySymbol] = useState(settings.currencySymbol);
-  const [currency, setCurrency] = useState(settings.currency);
-  const [minStockAlertDefault, setMinStockAlertDefault] = useState(settings.minStockAlertDefault);
+  const [boutiqueName, setBoutiqueName] = useState(safe.boutiqueName);
+  const [subtitle, setSubtitle] = useState(safe.subtitle);
+  const [currencySymbol, setCurrencySymbol] = useState(safe.currencySymbol);
+  const [currency, setCurrency] = useState(safe.currency);
+  const [minStockAlertDefault, setMinStockAlertDefault] = useState(safe.minStockAlertDefault);
 
-  const [groups, setGroups] = useState<string[]>([...settings.groups]);
+  const [groups, setGroups] = useState<string[]>([...safe.groups]);
   const [newGroupInput, setNewGroupInput] = useState('');
 
-  const [centers, setCenters] = useState<string[]>([...settings.centers]);
+  const [centers, setCenters] = useState<string[]>([...safe.centers]);
   const [newCenterInput, setNewCenterInput] = useState('');
 
   // Portal & Sections state
-  const [portalEnabled, setPortalEnabled] = useState(settings.portal.portalEnabled);
-  const [whatsappNumber, setWhatsappNumber] = useState(settings.portal.whatsappNumber);
-  const [whatsappCleanNumber, setWhatsappCleanNumber] = useState(settings.portal.whatsappCleanNumber);
-  const [pickupLocation, setPickupLocation] = useState(settings.portal.pickupLocation);
-  const [orderPolicies, setOrderPolicies] = useState(settings.portal.orderPolicies);
+  const [portalEnabled, setPortalEnabled] = useState(safe.portal.portalEnabled);
+  const [whatsappNumber, setWhatsappNumber] = useState(safe.portal.whatsappNumber);
+  const [whatsappCleanNumber, setWhatsappCleanNumber] = useState(safe.portal.whatsappCleanNumber);
+  const [pickupLocation, setPickupLocation] = useState(safe.portal.pickupLocation);
+  const [orderPolicies, setOrderPolicies] = useState(safe.portal.orderPolicies);
   
-  const [heroHeadline, setHeroHeadline] = useState(settings.portal.heroHeadline || settings.boutiqueName);
-  const [heroSubheadline, setHeroSubheadline] = useState(
-    settings.portal.heroSubheadline || 'Lleva contigo nuestra identidad, servicio y comunidad. Indumentaria oficial, distintivos y artículos para la fraternidad.'
-  );
-  const [heroBadge, setHeroBadge] = useState(settings.portal.heroBadge || 'Portal Oficial de Pedidos FGDLL');
+  const [heroHeadline, setHeroHeadline] = useState(safe.portal.heroHeadline || safe.boutiqueName);
+  const [heroSubheadline, setHeroSubheadline] = useState(safe.portal.heroSubheadline || '');
+  const [heroBadge, setHeroBadge] = useState(safe.portal.heroBadge || '');
 
   const [sectionsConfig, setSectionsConfig] = useState<PortalSectionsConfig>(
-    settings.portal.sectionsConfig || {
+    safe.portal.sectionsConfig || {
       hero: true,
       anniversary: true,
       categories: true,
@@ -67,21 +68,21 @@ export const SettingsManagerView: React.FC<SettingsManagerViewProps> = ({
   );
 
   // Bank details state
-  const [bankName, setBankName] = useState(settings.portal.bankDetails.bankName);
-  const [accountHolder, setAccountHolder] = useState(settings.portal.bankDetails.accountHolder);
-  const [clabe, setClabe] = useState(settings.portal.bankDetails.clabe);
-  const [accountNumber, setAccountNumber] = useState(settings.portal.bankDetails.accountNumber || '');
-  const [paymentInstructions, setPaymentInstructions] = useState(settings.portal.bankDetails.paymentInstructions || '');
+  const [bankName, setBankName] = useState(safe.portal.bankDetails.bankName);
+  const [accountHolder, setAccountHolder] = useState(safe.portal.bankDetails.accountHolder);
+  const [clabe, setClabe] = useState(safe.portal.bankDetails.clabe);
+  const [accountNumber, setAccountNumber] = useState(safe.portal.bankDetails.accountNumber || '');
+  const [paymentInstructions, setPaymentInstructions] = useState(safe.portal.bankDetails.paymentInstructions || '');
 
   // Anniversary collection state
-  const [anniversaryActive, setAnniversaryActive] = useState(settings.portal.anniversary.active);
-  const [editionName, setEditionName] = useState(settings.portal.anniversary.editionName);
-  const [year, setYear] = useState(settings.portal.anniversary.year);
-  const [anniversaryTitle, setAnniversaryTitle] = useState(settings.portal.anniversary.heroTitle);
-  const [anniversarySubtitle, setAnniversarySubtitle] = useState(settings.portal.anniversary.heroSubtitle);
-  const [deadlineDate, setDeadlineDate] = useState(settings.portal.anniversary.deadlineDate?.split('T')[0] || '2026-10-25');
-  const [deliveryDate, setDeliveryDate] = useState(settings.portal.anniversary.estimatedDeliveryDate?.split('T')[0] || '2026-11-10');
-  const [bannerImageUrl, setBannerImageUrl] = useState(settings.portal.anniversary.bannerImageUrl);
+  const [anniversaryActive, setAnniversaryActive] = useState(safe.portal.anniversary.active);
+  const [editionName, setEditionName] = useState(safe.portal.anniversary.editionName);
+  const [year, setYear] = useState(safe.portal.anniversary.year);
+  const [anniversaryTitle, setAnniversaryTitle] = useState(safe.portal.anniversary.heroTitle);
+  const [anniversarySubtitle, setAnniversarySubtitle] = useState(safe.portal.anniversary.heroSubtitle);
+  const [deadlineDate, setDeadlineDate] = useState(safe.portal.anniversary.deadlineDate?.split('T')[0] || '2026-10-25');
+  const [deliveryDate, setDeliveryDate] = useState(safe.portal.anniversary.estimatedDeliveryDate?.split('T')[0] || '2026-11-10');
+  const [bannerImageUrl, setBannerImageUrl] = useState(safe.portal.anniversary.bannerImageUrl);
 
   const [savedSuccess, setSavedSuccess] = useState(false);
 
@@ -108,7 +109,7 @@ export const SettingsManagerView: React.FC<SettingsManagerViewProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const updated: BoutiqueSettings = {
-      ...settings,
+      ...safe,
       boutiqueName: boutiqueName.trim(),
       subtitle: subtitle.trim(),
       currencySymbol,
@@ -117,7 +118,7 @@ export const SettingsManagerView: React.FC<SettingsManagerViewProps> = ({
       groups,
       centers,
       portal: {
-        ...settings.portal,
+        ...safe.portal,
         portalEnabled,
         whatsappNumber: whatsappNumber.trim(),
         whatsappCleanNumber: whatsappCleanNumber.trim().replace(/\D/g, ''),
@@ -135,7 +136,7 @@ export const SettingsManagerView: React.FC<SettingsManagerViewProps> = ({
           paymentInstructions: paymentInstructions.trim()
         },
         anniversary: {
-          ...settings.portal.anniversary,
+          ...safe.portal.anniversary,
           active: anniversaryActive,
           editionName: editionName.trim(),
           year: Number(year) || 2026,

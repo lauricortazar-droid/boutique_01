@@ -10,6 +10,7 @@ import {
 // Mock Initial Data
 import { 
   INITIAL_SETTINGS, 
+  getSafeBoutiqueSettings,
   INITIAL_CATEGORIES, 
   INITIAL_PRODUCTS, 
   INITIAL_CUSTOMERS, 
@@ -122,8 +123,15 @@ export default function App() {
 
   // App Persistent State (with localStorage fallback)
   const [settings, setSettings] = useState<BoutiqueSettings>(() => {
-    const s = localStorage.getItem('fgdll_settings');
-    return s ? JSON.parse(s) : INITIAL_SETTINGS;
+    try {
+      const s = localStorage.getItem('fgdll_settings');
+      if (s) {
+        return getSafeBoutiqueSettings(JSON.parse(s));
+      }
+    } catch (e) {
+      console.warn('Failed to parse fgdll_settings', e);
+    }
+    return INITIAL_SETTINGS;
   });
 
   const [categories, setCategories] = useState<Category[]>(() => {
@@ -832,7 +840,7 @@ export default function App() {
           orders={orders}
           customers={customers}
           categories={categories}
-          settings={settings}
+          settings={getSafeBoutiqueSettings(settings)}
           onSaveOrderFromPortal={handleSaveOrderFromPortal}
           onSwitchToAdmin={() => handleSwitchMode('admin')}
           showNotification={showNotification}

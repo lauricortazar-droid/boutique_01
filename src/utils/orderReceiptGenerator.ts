@@ -304,14 +304,21 @@ export const generateOrderReceiptPng = async (
       ctx.fillStyle = '#f59e0b';
       ctx.fillText('INSTRUCCIONES DE PAGO Y TRANSFERENCIA (50% O TOTAL)', 70, y + 25);
 
+      const bankDetails = settings?.portal?.bankDetails || {
+        bankName: 'BBVA Bancomer',
+        accountHolder: 'Fraternidad Guerreros de la Luz A.C.',
+        clabe: '012180015523456789'
+      };
+      const whatsappNumber = settings?.portal?.whatsappNumber || '+1 999 359 8514';
+
       ctx.font = '12px sans-serif';
       ctx.fillStyle = '#cbd5e1';
-      ctx.fillText(`Banco: ${settings.portal.bankDetails.bankName}`, 70, y + 50);
-      ctx.fillText(`Titular: ${settings.portal.bankDetails.accountHolder}`, 70, y + 70);
+      ctx.fillText(`Banco: ${bankDetails.bankName}`, 70, y + 50);
+      ctx.fillText(`Titular: ${bankDetails.accountHolder}`, 70, y + 70);
 
       ctx.font = 'bold 13px monospace';
       ctx.fillStyle = '#38bdf8';
-      ctx.fillText(`CLABE: ${settings.portal.bankDetails.clabe}`, 70, y + 95);
+      ctx.fillText(`CLABE: ${bankDetails.clabe}`, 70, y + 95);
 
       ctx.textAlign = 'right';
       ctx.font = 'bold 12px sans-serif';
@@ -321,7 +328,7 @@ export const generateOrderReceiptPng = async (
       ctx.font = '11px sans-serif';
       ctx.fillStyle = '#94a3b8';
       ctx.fillText('Envía captura de tu comprobante', width - 70, y + 74);
-      ctx.fillText(`WhatsApp: ${settings.portal.whatsappNumber}`, width - 70, y + 95);
+      ctx.fillText(`WhatsApp: ${whatsappNumber}`, width - 70, y + 95);
 
       y += 140;
 

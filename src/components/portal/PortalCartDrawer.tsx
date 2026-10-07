@@ -129,7 +129,7 @@ export const PortalCartDrawer: React.FC<PortalCartDrawerProps> = ({
     };
 
     // Delivery location string
-    let locationStr = settings.portal.pickupLocation;
+    let locationStr = settings?.portal?.pickupLocation || 'Sede Central de la Fraternidad & Congresos de Zona';
     if (deliveryMethod === 'envio') {
       locationStr = deliveryAddress.trim() || 'Dirección por confirmar';
     } else if (deliveryMethod === 'grupo') {

@@ -40,21 +40,33 @@ export const PortalHeader: React.FC<PortalHeaderProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showSearchInput, setShowSearchInput] = useState(false);
 
+  const portal = settings?.portal || {
+    portalEnabled: true,
+    whatsappNumber: '+1 999 359 8514',
+    whatsappCleanNumber: '19993598514',
+    anniversary: {
+      active: true,
+      editionName: 'XVIII ANIVERSARIO',
+      heroTitle: 'XVIII ANIVERSARIO — FRATERNIDAD GUERREROS DE LA LUZ'
+    }
+  };
+  const anniversary = portal.anniversary || { active: false, editionName: '', heroTitle: '' };
+
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const totalCartAmount = cartItems.reduce((acc, item) => acc + item.totalPrice, 0);
 
-  const whatsappUrl = `https://wa.me/${settings.portal.whatsappCleanNumber}?text=${encodeURIComponent(
+  const whatsappUrl = `https://wa.me/${portal.whatsappCleanNumber || '19993598514'}?text=${encodeURIComponent(
     'Hola Boutique Guerreros de la Luz, deseo información sobre pedidos y catálogo de la fraternidad.'
   )}`;
 
   return (
     <header className="sticky top-0 z-40 border-b border-amber-500/20 bg-slate-950/95 backdrop-blur-md">
       {/* Top Banner Notice for Anniversary or Notice */}
-      {settings.portal.anniversary.active && (
+      {anniversary.active && (
         <div className="bg-gradient-to-r from-amber-950/90 via-amber-900/60 to-slate-950 px-3 py-1.5 text-center text-[11px] font-medium text-amber-200 border-b border-amber-500/20 flex items-center justify-center gap-2">
           <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-ping"></span>
           <span className="font-bold text-amber-300">★ Preventa Oficial:</span>
-          <span>{settings.portal.anniversary.heroTitle}</span>
+          <span>{anniversary.heroTitle}</span>
           <button
             onClick={() => setCurrentPortalTab('anniversary')}
             className="underline hover:text-amber-100 font-bold ml-1 cursor-pointer"
@@ -114,7 +126,7 @@ export const PortalHeader: React.FC<PortalHeaderProps> = ({
             Catálogo Completo
           </button>
 
-          {settings.portal.anniversary.active && (
+          {anniversary.active && (
             <button
               onClick={() => setCurrentPortalTab('anniversary')}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
@@ -124,7 +136,7 @@ export const PortalHeader: React.FC<PortalHeaderProps> = ({
               }`}
             >
               <Sparkles className="h-3.5 w-3.5" />
-              <span>{settings.portal.anniversary.editionName}</span>
+              <span>{anniversary.editionName}</span>
             </button>
           )}
 
@@ -283,7 +295,7 @@ export const PortalHeader: React.FC<PortalHeaderProps> = ({
               Catálogo
             </button>
 
-            {settings.portal.anniversary.active && (
+            {anniversary.active && (
               <button
                 onClick={() => {
                   setCurrentPortalTab('anniversary');
@@ -296,7 +308,7 @@ export const PortalHeader: React.FC<PortalHeaderProps> = ({
                 }`}
               >
                 <Sparkles className="h-4 w-4" />
-                <span>Colección {settings.portal.anniversary.editionName}</span>
+                <span>Colección {anniversary.editionName}</span>
               </button>
             )}
 

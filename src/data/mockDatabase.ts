@@ -6,6 +6,7 @@ import {
   Supplier, 
   InventoryMovement, 
   BoutiqueSettings,
+  PortalSettings,
   ZoneFGDLL
 } from '../types';
 
@@ -82,6 +83,82 @@ export const INITIAL_SETTINGS: BoutiqueSettings = {
     heroSubheadline: 'Lleva contigo nuestra identidad, servicio y comunidad. Indumentaria oficial, distintivos y artículos para la fraternidad.',
     heroBadge: 'Portal Oficial de Pedidos FGDLL'
   }
+};
+
+export const getSafeBoutiqueSettings = (settings?: Partial<BoutiqueSettings> | null): BoutiqueSettings => {
+  const safeBase = settings || {};
+  const basePortal: Partial<PortalSettings> = safeBase.portal || {};
+  const baseBank: Partial<PortalSettings['bankDetails']> = basePortal.bankDetails || {};
+  const baseAnniv: Partial<PortalSettings['anniversary']> = basePortal.anniversary || {};
+  const baseSections: Partial<NonNullable<PortalSettings['sectionsConfig']>> = basePortal.sectionsConfig || {};
+  const defaultSections = INITIAL_SETTINGS.portal?.sectionsConfig || {
+    hero: true,
+    anniversary: true,
+    categories: true,
+    featured: true,
+    newArrivals: true,
+    customizable: true,
+    policies: true
+  };
+
+  return {
+    ...INITIAL_SETTINGS,
+    ...safeBase,
+    boutiqueName: safeBase.boutiqueName || INITIAL_SETTINGS.boutiqueName,
+    subtitle: safeBase.subtitle || INITIAL_SETTINGS.subtitle,
+    currency: safeBase.currency || INITIAL_SETTINGS.currency,
+    currencySymbol: safeBase.currencySymbol || INITIAL_SETTINGS.currencySymbol,
+    zones: safeBase.zones?.length ? safeBase.zones : INITIAL_SETTINGS.zones,
+    groups: safeBase.groups?.length ? safeBase.groups : INITIAL_SETTINGS.groups,
+    centers: safeBase.centers?.length ? safeBase.centers : INITIAL_SETTINGS.centers,
+    enabledSections: {
+      ...INITIAL_SETTINGS.enabledSections,
+      ...(safeBase.enabledSections || {})
+    },
+    portal: {
+      ...INITIAL_SETTINGS.portal,
+      ...basePortal,
+      portalEnabled: basePortal.portalEnabled ?? INITIAL_SETTINGS.portal.portalEnabled,
+      whatsappNumber: basePortal.whatsappNumber || INITIAL_SETTINGS.portal.whatsappNumber,
+      whatsappCleanNumber: (basePortal.whatsappCleanNumber || basePortal.whatsappNumber || INITIAL_SETTINGS.portal.whatsappCleanNumber).replace(/\D/g, '') || INITIAL_SETTINGS.portal.whatsappCleanNumber,
+      pickupLocation: basePortal.pickupLocation || INITIAL_SETTINGS.portal.pickupLocation,
+      orderPolicies: basePortal.orderPolicies || INITIAL_SETTINGS.portal.orderPolicies,
+      heroHeadline: basePortal.heroHeadline || INITIAL_SETTINGS.portal.heroHeadline,
+      heroSubheadline: basePortal.heroSubheadline || INITIAL_SETTINGS.portal.heroSubheadline,
+      heroBadge: basePortal.heroBadge || INITIAL_SETTINGS.portal.heroBadge,
+      bankDetails: {
+        ...INITIAL_SETTINGS.portal.bankDetails,
+        ...baseBank,
+        bankName: baseBank.bankName || INITIAL_SETTINGS.portal.bankDetails.bankName,
+        accountHolder: baseBank.accountHolder || INITIAL_SETTINGS.portal.bankDetails.accountHolder,
+        clabe: baseBank.clabe || INITIAL_SETTINGS.portal.bankDetails.clabe,
+        accountNumber: baseBank.accountNumber || INITIAL_SETTINGS.portal.bankDetails.accountNumber,
+        paymentInstructions: baseBank.paymentInstructions || INITIAL_SETTINGS.portal.bankDetails.paymentInstructions
+      },
+      anniversary: {
+        ...INITIAL_SETTINGS.portal.anniversary,
+        ...baseAnniv,
+        active: baseAnniv.active ?? INITIAL_SETTINGS.portal.anniversary.active,
+        editionName: baseAnniv.editionName || INITIAL_SETTINGS.portal.anniversary.editionName,
+        year: baseAnniv.year || INITIAL_SETTINGS.portal.anniversary.year,
+        heroTitle: baseAnniv.heroTitle || INITIAL_SETTINGS.portal.anniversary.heroTitle,
+        heroSubtitle: baseAnniv.heroSubtitle || INITIAL_SETTINGS.portal.anniversary.heroSubtitle,
+        bannerImageUrl: baseAnniv.bannerImageUrl || INITIAL_SETTINGS.portal.anniversary.bannerImageUrl,
+        deadlineDate: baseAnniv.deadlineDate || INITIAL_SETTINGS.portal.anniversary.deadlineDate,
+        estimatedDeliveryDate: baseAnniv.estimatedDeliveryDate || INITIAL_SETTINGS.portal.anniversary.estimatedDeliveryDate,
+        featuredProductIds: baseAnniv.featuredProductIds || INITIAL_SETTINGS.portal.anniversary.featuredProductIds
+      },
+      sectionsConfig: {
+        hero: baseSections.hero ?? defaultSections.hero,
+        anniversary: baseSections.anniversary ?? defaultSections.anniversary,
+        categories: baseSections.categories ?? defaultSections.categories,
+        featured: baseSections.featured ?? defaultSections.featured,
+        newArrivals: baseSections.newArrivals ?? defaultSections.newArrivals,
+        customizable: baseSections.customizable ?? defaultSections.customizable,
+        policies: baseSections.policies ?? defaultSections.policies
+      }
+    }
+  };
 };
 
 export const INITIAL_CATEGORIES: Category[] = [

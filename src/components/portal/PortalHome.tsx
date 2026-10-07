@@ -34,7 +34,31 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
   onSelectProduct,
   onOpenTracker
 }) => {
-  const sections = settings.portal.sectionsConfig || {
+  const portal = settings?.portal || {
+    portalEnabled: true,
+    whatsappNumber: '+1 999 359 8514',
+    whatsappCleanNumber: '19993598514',
+    heroHeadline: 'Boutique Guerreros de la Luz',
+    heroSubheadline: 'Lleva contigo nuestra identidad, servicio y comunidad. Indumentaria oficial, distintivos y artículos para la fraternidad.',
+    heroBadge: 'Portal Oficial de Pedidos FGDLL',
+    anniversary: {
+      active: true,
+      editionName: 'XVIII ANIVERSARIO',
+      heroTitle: 'XVIII ANIVERSARIO — FRATERNIDAD GUERREROS DE LA LUZ',
+      heroSubtitle: 'Conmemorando 18 años de servicio, fortaleza, disciplina y hermandad. Colección oficial exclusiva de aniversario en preventa.'
+    },
+    sectionsConfig: {
+      hero: true,
+      anniversary: true,
+      categories: true,
+      featured: true,
+      newArrivals: true,
+      customizable: true,
+      policies: true
+    }
+  };
+
+  const sections = portal.sectionsConfig || {
     hero: true,
     anniversary: true,
     categories: true,
@@ -42,6 +66,13 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
     newArrivals: true,
     customizable: true,
     policies: true
+  };
+
+  const anniversary = portal.anniversary || {
+    active: false,
+    heroTitle: '',
+    heroSubtitle: '',
+    editionName: ''
   };
 
   const activeProducts = products.filter(p => p.active && p.visibleInPortal !== false);
@@ -62,15 +93,15 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
           <div className="relative max-w-3xl space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full bg-amber-500/10 border border-amber-500/30 px-3.5 py-1 text-xs font-bold text-amber-300">
               <Shield className="h-3.5 w-3.5" />
-              <span>{settings.portal.heroBadge || 'Portal Oficial de Pedidos FGDLL'}</span>
+              <span>{portal.heroBadge || 'Portal Oficial de Pedidos FGDLL'}</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-serif font-black tracking-tight text-slate-100 leading-tight">
-              {settings.portal.heroHeadline || settings.boutiqueName}
+              {portal.heroHeadline || settings.boutiqueName}
             </h1>
 
             <p className="text-base sm:text-lg text-slate-300 font-normal leading-relaxed max-w-2xl">
-              {settings.portal.heroSubheadline || 'Lleva contigo nuestra identidad, servicio y comunidad. Indumentaria oficial, distintivos y artículos para la fraternidad.'}
+              {portal.heroSubheadline || 'Lleva contigo nuestra identidad, servicio y comunidad. Indumentaria oficial, distintivos y artículos para la fraternidad.'}
             </p>
 
             <div className="pt-2 flex flex-wrap items-center gap-3">
@@ -84,14 +115,14 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
                 <ArrowRight className="h-4 w-4" />
               </button>
 
-              {settings.portal.anniversary.active && (
+              {anniversary.active && (
                 <button
                   type="button"
                   onClick={onNavigateToAnniversary}
                   className="flex items-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-5 py-3.5 text-xs sm:text-sm font-bold text-amber-300 hover:bg-amber-500/20 transition cursor-pointer"
                 >
                   <Sparkles className="h-4 w-4" />
-                  <span>{settings.portal.anniversary.editionName}</span>
+                  <span>{anniversary.editionName}</span>
                 </button>
               )}
 
@@ -108,7 +139,7 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
       )}
 
       {/* 2. SPECIAL ANNIVERSARY BANNER & COLLECTION */}
-      {sections.anniversary && settings.portal.anniversary.active && anniversaryProducts.length > 0 && (
+      {sections.anniversary && anniversary.active && anniversaryProducts.length > 0 && (
         <section className="space-y-5 rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-950 p-6 sm:p-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -117,10 +148,10 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
                 EDICIÓN CONMEMORATIVA EXCLUSIVA
               </div>
               <h2 className="text-2xl sm:text-3xl font-serif font-black text-slate-100 mt-1">
-                {settings.portal.anniversary.heroTitle}
+                {anniversary.heroTitle}
               </h2>
               <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
-                {settings.portal.anniversary.heroSubtitle}
+                {anniversary.heroSubtitle}
               </p>
             </div>
 
@@ -390,7 +421,7 @@ export const PortalHome: React.FC<PortalHomeProps> = ({
               Atención Directa por WhatsApp
             </h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Dudas sobre tallas, pedidos colectivos de grupo o recepción de comprobantes al {settings.portal.whatsappNumber}.
+              Dudas sobre tallas, pedidos colectivos de grupo o recepción de comprobantes al {portal.whatsappNumber || '+1 999 359 8514'}.
             </p>
           </div>
         </section>
