@@ -85,29 +85,79 @@ import { CategoryManagerModal } from './components/CategoryManagerModal';
 import { RegisterPaymentModal } from './components/RegisterPaymentModal';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { ConfirmModal } from './components/ConfirmModal';
+import { AdminPasscodeModal } from './components/AdminPasscodeModal';
 import { AlertCircle, CheckCircle2, Sparkles, X, ShoppingBag, LayoutDashboard } from 'lucide-react';
 
 export default function App() {
+  // Check if current browser session has entered secret key 9998997226
+  const [isAdminAuthorized, setIsAdminAuthorized] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem('fgdll_admin_authorized') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const [isAdminAuthModalOpen, setIsAdminAuthModalOpen] = useState(false);
+
   // Master Module Mode: 'portal' (público para miembros/clientes) | 'admin' (panel boutique institucional)
   const [appMode, setAppMode] = useState<'portal' | 'admin'>(() => {
     try {
+      const isAuth = sessionStorage.getItem('fgdll_admin_authorized') === 'true';
       const params = new URLSearchParams(window.location.search);
       const urlMode = params.get('mode');
-      if (urlMode === 'admin' || urlMode === 'portal') return urlMode;
+      if (urlMode === 'admin') return isAuth ? 'admin' : 'portal';
+      if (urlMode === 'portal') return 'portal';
       const saved = localStorage.getItem('fgdll_app_mode');
-      return (saved === 'admin' || saved === 'portal') ? saved : 'portal';
+      if (saved === 'admin') return isAuth ? 'admin' : 'portal';
+      return 'portal';
     } catch {
       return 'portal';
     }
   });
 
   const handleSwitchMode = (mode: 'portal' | 'admin') => {
+    if (mode === 'admin') {
+      if (!isAdminAuthorized) {
+        setIsAdminAuthModalOpen(true);
+        return;
+      }
+    }
     setAppMode(mode);
     try {
       localStorage.setItem('fgdll_app_mode', mode);
     } catch (e) {
       console.warn(e);
     }
+  };
+
+  const handleAdminAuthSuccess = () => {
+    setIsAdminAuthorized(true);
+    try {
+      sessionStorage.setItem('fgdll_admin_authorized', 'true');
+    } catch (e) {
+      console.warn(e);
+    }
+    setIsAdminAuthModalOpen(false);
+    setAppMode('admin');
+    try {
+      localStorage.setItem('fgdll_app_mode', 'admin');
+    } catch (e) {
+      console.warn(e);
+    }
+    showNotification('success', 'Acceso autorizado al Panel de Administración.');
+  };
+
+  const handleLockAdmin = () => {
+    setIsAdminAuthorized(false);
+    try {
+      sessionStorage.removeItem('fgdll_admin_authorized');
+      localStorage.setItem('fgdll_app_mode', 'portal');
+    } catch (e) {
+      console.warn(e);
+    }
+    setAppMode('portal');
+    showNotification('info', 'Sesión de administración cerrada y bloqueada.');
   };
 
   // Navigation State
@@ -887,6 +937,13 @@ export default function App() {
             <span>Panel Administrador (Boutique OS)</span>
           </button>
         </div>
+
+        {/* Secret Key Modal for Admin Protection */}
+        <AdminPasscodeModal
+          isOpen={isAdminAuthModalOpen}
+          onClose={() => setIsAdminAuthModalOpen(false)}
+          onSuccess={handleAdminAuthSuccess}
+        />
       </div>
     );
   }
@@ -953,6 +1010,7 @@ export default function App() {
           setIsFastOrderModalOpen(true);
         }}
         onOpenPortal={() => handleSwitchMode('portal')}
+        onLockAdmin={handleLockAdmin}
         settings={settings}
         currentRole={currentRole}
         onChangeRole={setCurrentRole}
@@ -1253,6 +1311,13 @@ export default function App() {
           <span>Ver Portal de Clientes (Público)</span>
         </button>
       </div>
+
+      {/* Secret Key Modal for Admin Protection */}
+      <AdminPasscodeModal
+        isOpen={isAdminAuthModalOpen}
+        onClose={() => setIsAdminAuthModalOpen(false)}
+        onSuccess={handleAdminAuthSuccess}
+      />
     </div>
   );
 }

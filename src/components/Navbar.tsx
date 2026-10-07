@@ -14,7 +14,8 @@ import {
   Table, 
   Truck,
   Menu,
-  X
+  X,
+  Lock
 } from 'lucide-react';
 import { User } from 'firebase/auth';
 import { BoutiqueSettings, UserRole } from '../types';
@@ -32,6 +33,7 @@ interface NavbarProps {
   onOpenGlobalSearch: () => void;
   onOpenNewOrder: () => void;
   onOpenPortal?: () => void;
+  onLockAdmin?: () => void;
   settings: BoutiqueSettings;
   currentRole: UserRole;
   onChangeRole: (role: UserRole) => void;
@@ -50,6 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenGlobalSearch,
   onOpenNewOrder,
   onOpenPortal,
+  onLockAdmin,
   settings,
   currentRole,
   onChangeRole
@@ -115,6 +118,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <ShoppingBag className="h-3.5 w-3.5 text-indigo-400" />
                 <span className="hidden md:inline">Portal de Pedidos</span>
+              </button>
+            )}
+
+            {/* Lock / Exit Admin Button */}
+            {onLockAdmin && (
+              <button
+                onClick={onLockAdmin}
+                className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-900/90 px-2.5 py-1.5 text-xs font-medium text-slate-400 hover:text-amber-300 hover:border-amber-500/40 transition cursor-pointer"
+                title="Bloquear sesión de administración y salir al Portal"
+              >
+                <Lock className="h-3.5 w-3.5 text-amber-400" />
+                <span className="hidden xl:inline">Bloquear Admin</span>
               </button>
             )}
 
@@ -277,6 +292,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-indigo-950/60 border border-indigo-500/40 py-2.5 text-xs font-bold text-indigo-300 cursor-pointer"
               >
                 <ShoppingBag className="h-4 w-4" /> Ver Portal Público de Pedidos (Clientes)
+              </button>
+            )}
+
+            {onLockAdmin && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onLockAdmin();
+                }}
+                className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-slate-900 border border-slate-800 py-2.5 text-xs font-medium text-slate-400 hover:text-amber-300 cursor-pointer"
+              >
+                <Lock className="h-4 w-4 text-amber-400" /> Bloquear Sesión Admin y Salir
               </button>
             )}
           </div>
