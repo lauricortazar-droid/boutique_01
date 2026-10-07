@@ -41,6 +41,46 @@ export const INITIAL_SETTINGS: BoutiqueSettings = {
     reports: true,
     workspace: true,
     settings: true
+  },
+  portal: {
+    portalEnabled: true,
+    whatsappNumber: '+1 999 359 8514',
+    whatsappCleanNumber: '19993598514',
+    pickupLocation: 'Sede Central de la Fraternidad & Congresos de Zona',
+    orderPolicies: 'Los pedidos personalizados requieren 50% de anticipo para entrar a taller. Tiempo estimado de entrega de 3 a 5 días hábiles.',
+    bankDetails: {
+      bankName: 'BBVA Bancomer',
+      accountHolder: 'Fraternidad Guerreros de la Luz A.C.',
+      clabe: '012180015523456789',
+      accountNumber: '1552345678',
+      paymentInstructions: 'Usa tu número de pedido (ej. PED-2026-XXXXXX) como concepto o referencia de transferencia y comparte tu comprobante por WhatsApp.'
+    },
+    anniversary: {
+      active: true,
+      editionName: 'XVIII ANIVERSARIO',
+      editionNumber: 18,
+      year: 2026,
+      heroTitle: 'XVIII ANIVERSARIO — FRATERNIDAD GUERREROS DE LA LUZ',
+      heroSubtitle: 'Conmemorando 18 años de servicio, fortaleza, disciplina y hermandad. Colección oficial exclusiva de aniversario en preventa.',
+      bannerImageUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=1200&auto=format&fit=crop&q=80',
+      eventDate: '2026-11-15T09:00:00Z',
+      preorderStartDate: '2026-09-01T00:00:00Z',
+      deadlineDate: '2026-10-25T23:59:59Z',
+      estimatedDeliveryDate: '2026-11-10T12:00:00Z',
+      featuredProductIds: ['prod-ani-001', 'prod-ani-002', 'prod-ani-003', 'prod-ani-004']
+    },
+    sectionsConfig: {
+      hero: true,
+      anniversary: true,
+      categories: true,
+      featured: true,
+      newArrivals: true,
+      customizable: true,
+      policies: true
+    },
+    heroHeadline: 'Boutique Guerreros de la Luz',
+    heroSubheadline: 'Lleva contigo nuestra identidad, servicio y comunidad. Indumentaria oficial, distintivos y artículos para la fraternidad.',
+    heroBadge: 'Portal Oficial de Pedidos FGDLL'
   }
 };
 
@@ -111,6 +151,122 @@ export const INITIAL_CATEGORIES: Category[] = [
 ];
 
 export const INITIAL_PRODUCTS: Product[] = [
+  {
+    id: 'prod-ani-001',
+    sku: 'ANI-PLA-018',
+    name: 'Playera Conmemorativa XVIII Aniversario',
+    categoryId: 'cat-ropa',
+    subcategory: 'Playeras',
+    description: 'Edición conmemorativa exclusiva del XVIII Aniversario. Confeccionada en algodón peinado de 240g color negro azabache con escudo heráldico en foil oro metálico y numeración de aniversario.',
+    price: 420,
+    cost: 190,
+    margin: 54.7,
+    stock: 120,
+    reservedStock: 14,
+    minStock: 20,
+    imageUrl: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500&auto=format&fit=crop&q=60',
+    active: true,
+    visibleInPortal: true,
+    isCustomizable: true,
+    estimatedPreparationDays: 3,
+    supplierId: 'sup-001',
+    isAnniversary: true,
+    anniversaryEdition: 'XVIII ANIVERSARIO',
+    anniversaryYear: 2026,
+    anniversaryTag: 'EDICIÓN ESPECIAL',
+    anniversaryDeadline: '2026-10-25T23:59:59Z',
+    maxPerCustomer: 5,
+    variants: [
+      { id: 'va-01', sku: 'ANI-PLA-018-S', size: 'S', color: 'Negro / Oro', zone: 'General FGDLL', additionalPrice: 0, stock: 25, reservedStock: 2 },
+      { id: 'va-02', sku: 'ANI-PLA-018-M', size: 'M', color: 'Negro / Oro', zone: 'General FGDLL', additionalPrice: 0, stock: 35, reservedStock: 4 },
+      { id: 'va-03', sku: 'ANI-PLA-018-L', size: 'L', color: 'Negro / Oro', zone: 'General FGDLL', additionalPrice: 0, stock: 40, reservedStock: 5 },
+      { id: 'va-04', sku: 'ANI-PLA-018-XL', size: 'XL', color: 'Negro / Oro', zone: 'General FGDLL', additionalPrice: 30, stock: 20, reservedStock: 3 }
+    ]
+  },
+  {
+    id: 'prod-ani-002',
+    sku: 'ANI-GOR-018',
+    name: 'Gorra Táctica Conmemorativa XVIII Aniversario',
+    categoryId: 'cat-accesorios',
+    subcategory: 'Gorras',
+    description: 'Gorra premium con panel rígido frontal, bordado en alto relieve 3D en hilo de oro de aniversario y broche metálico pavonado.',
+    price: 340,
+    cost: 140,
+    margin: 58.8,
+    stock: 80,
+    reservedStock: 10,
+    minStock: 15,
+    imageUrl: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=500&auto=format&fit=crop&q=60',
+    active: true,
+    visibleInPortal: true,
+    isCustomizable: false,
+    estimatedPreparationDays: 2,
+    supplierId: 'sup-002',
+    isAnniversary: true,
+    anniversaryEdition: 'XVIII ANIVERSARIO',
+    anniversaryYear: 2026,
+    anniversaryTag: 'EDICIÓN LIMITADA',
+    anniversaryDeadline: '2026-10-25T23:59:59Z',
+    variants: [
+      { id: 'va-05', sku: 'ANI-GOR-018-NEG', size: 'Ajustable', color: 'Negro / Oro', zone: 'General FGDLL', additionalPrice: 0, stock: 80, reservedStock: 10 }
+    ]
+  },
+  {
+    id: 'prod-ani-003',
+    sku: 'ANI-TER-018',
+    name: 'Termo de Colección XVIII Aniversario (750 ml)',
+    categoryId: 'cat-hogar',
+    subcategory: 'Termos',
+    description: 'Termo térmico en acero inoxidable de doble capa al vacío grabado a láser conmemorativo y opción a grabar el nombre del servidor.',
+    price: 390,
+    cost: 165,
+    margin: 57.6,
+    stock: 60,
+    reservedStock: 8,
+    minStock: 10,
+    imageUrl: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500&auto=format&fit=crop&q=60',
+    active: true,
+    visibleInPortal: true,
+    isCustomizable: true,
+    estimatedPreparationDays: 3,
+    supplierId: 'sup-003',
+    isAnniversary: true,
+    anniversaryEdition: 'XVIII ANIVERSARIO',
+    anniversaryYear: 2026,
+    anniversaryTag: 'PREVENTA',
+    anniversaryDeadline: '2026-10-25T23:59:59Z',
+    variants: [
+      { id: 'va-06', sku: 'ANI-TER-018-NEG', size: '750 ml', color: 'Negro Mate', zone: 'General FGDLL', additionalPrice: 0, stock: 60, reservedStock: 8 }
+    ]
+  },
+  {
+    id: 'prod-ani-004',
+    sku: 'ANI-MED-018',
+    name: 'Medalla Conmemorativa XVIII Aniversario en Latón y Oro',
+    categoryId: 'cat-identidad',
+    subcategory: 'Emblemas',
+    description: 'Pieza de colección en latón macizo con baño de oro de 24k en relieve escultórico, montada en estuche de terciopelo azul noche con certificado.',
+    price: 490,
+    cost: 210,
+    margin: 57.1,
+    stock: 50,
+    reservedStock: 5,
+    minStock: 8,
+    imageUrl: 'https://images.unsplash.com/photo-1611591475815-508ce0196224?w=500&auto=format&fit=crop&q=60',
+    active: true,
+    visibleInPortal: true,
+    isCustomizable: true,
+    estimatedPreparationDays: 4,
+    supplierId: 'sup-003',
+    isAnniversary: true,
+    anniversaryEdition: 'XVIII ANIVERSARIO',
+    anniversaryYear: 2026,
+    anniversaryTag: 'EDICIÓN LIMITADA',
+    anniversaryDeadline: '2026-10-25T23:59:59Z',
+    variants: [
+      { id: 'va-07', sku: 'ANI-MED-018-ORO', size: '7 cm', color: 'Oro Conmemorativo', zone: 'General FGDLL', additionalPrice: 0, stock: 50, reservedStock: 5 }
+    ]
+  },
   {
     id: 'prod-001',
     sku: 'ROP-PLA-001',

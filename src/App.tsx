@@ -75,6 +75,7 @@ import { SuppliersManagerView } from './components/SuppliersManagerView';
 import { ReportsManagerView } from './components/ReportsManagerView';
 import { SettingsManagerView } from './components/SettingsManagerView';
 import { WorkspaceHub } from './components/WorkspaceHub';
+import { PortalView } from './components/portal/PortalView';
 
 // Modals
 import { FastOrderModal } from './components/FastOrderModal';
@@ -83,9 +84,31 @@ import { CategoryManagerModal } from './components/CategoryManagerModal';
 import { RegisterPaymentModal } from './components/RegisterPaymentModal';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { ConfirmModal } from './components/ConfirmModal';
-import { AlertCircle, CheckCircle2, Sparkles, X } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Sparkles, X, ShoppingBag, LayoutDashboard } from 'lucide-react';
 
 export default function App() {
+  // Master Module Mode: 'portal' (público para miembros/clientes) | 'admin' (panel boutique institucional)
+  const [appMode, setAppMode] = useState<'portal' | 'admin'>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlMode = params.get('mode');
+      if (urlMode === 'admin' || urlMode === 'portal') return urlMode;
+      const saved = localStorage.getItem('fgdll_app_mode');
+      return (saved === 'admin' || saved === 'portal') ? saved : 'portal';
+    } catch {
+      return 'portal';
+    }
+  });
+
+  const handleSwitchMode = (mode: 'portal' | 'admin') => {
+    setAppMode(mode);
+    try {
+      localStorage.setItem('fgdll_app_mode', mode);
+    } catch (e) {
+      console.warn(e);
+    }
+  };
+
   // Navigation State
   const [activeTab, setActiveTab] = useState<string>('dashboard');
 
@@ -308,6 +331,65 @@ export default function App() {
     // 3. Add to orders
     setOrders(prev => [newOrder, ...prev]);
     showNotification('success', `Pedido ${newOrder.folio} registrado correctamente.`);
+  };
+
+  // Portal Public Order Insertion into Central DB
+  const handleSaveOrderFromPortal = (newOrder: Order, customer: Customer) => {
+    // 1. Add or update customer in central DB
+    setCustomers(prev => {
+      const existing = prev.find(c => c.phone === customer.phone || (customer.email && c.email === customer.email));
+      if (existing) {
+        return prev.map(c => c.id === existing.id ? {
+          ...c,
+          totalSpent: c.totalSpent,
+          activeOrdersCount: c.activeOrdersCount + 1,
+          pendingBalance: c.pendingBalance + newOrder.total,
+          notes: customer.notes ? `${c.notes ? c.notes + ' | ' : ''}${customer.notes}` : c.notes
+        } : c);
+      }
+      return [customer, ...prev];
+    });
+
+    // 2. Reserve stock for all items
+    setProducts(prevProducts => {
+      return prevProducts.map(p => {
+        const orderItem = newOrder.items.find(i => i.productId === p.id);
+        if (orderItem) {
+          return {
+            ...p,
+            reservedStock: p.reservedStock + orderItem.quantity,
+            variants: p.variants ? p.variants.map(v => {
+              if (v.id === orderItem.variantId) {
+                return { ...v, reservedStock: v.reservedStock + orderItem.quantity };
+              }
+              return v;
+            }) : []
+          };
+        }
+        return p;
+      });
+    });
+
+    // 3. Record movement
+    newOrder.items.forEach(i => {
+      const mov: InventoryMovement = {
+        id: `mov-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+        productId: i.productId,
+        productName: i.productName,
+        variantSku: i.variantSku,
+        movementType: 'reserva',
+        quantity: i.quantity,
+        date: new Date().toISOString(),
+        reason: `Reserva automática por pedido de portal ${newOrder.folio}`,
+        userName: 'Portal Público (Cliente)',
+        orderFolio: newOrder.folio
+      };
+      setMovements(prev => [mov, ...prev]);
+    });
+
+    // 4. Add to orders
+    setOrders(prev => [newOrder, ...prev]);
+    showNotification('success', `¡Pedido ${newOrder.folio} recibido y registrado en sistema!`);
   };
 
   const handleUpdateOrderStatus = (orderId: string, newStatus: OrderStatus, note?: string) => {
@@ -739,6 +821,71 @@ export default function App() {
   const pendingOrdersCount = orders.filter(o => !['entregado', 'cancelado'].includes(o.status)).length;
   const lowStockProductsCount = products.filter(p => (p.stock - p.reservedStock) <= p.minStock && p.active).length;
 
+  // ----------------------------------------------------
+  // PUBLIC PORTAL MODE (Mobile-First for Members & Fraternity)
+  // ----------------------------------------------------
+  if (appMode === 'portal') {
+    return (
+      <div className="relative">
+        <PortalView
+          products={products}
+          orders={orders}
+          customers={customers}
+          categories={categories}
+          settings={settings}
+          onSaveOrderFromPortal={handleSaveOrderFromPortal}
+          onSwitchToAdmin={() => handleSwitchMode('admin')}
+          showNotification={showNotification}
+        />
+
+        {/* Global Toast Notification in Portal */}
+        {notification && (
+          <div className="fixed top-3 right-3 sm:top-4 sm:right-4 z-50 max-w-sm sm:max-w-md animate-in slide-in-from-top-2 duration-300">
+            <div className={`flex items-start gap-3 rounded-2xl p-3.5 shadow-2xl border backdrop-blur-md ${
+              notification.type === 'success' 
+                ? 'bg-slate-900/95 border-emerald-500/50 text-emerald-200' 
+                : notification.type === 'error'
+                ? 'bg-slate-900/95 border-rose-500/50 text-rose-200'
+                : 'bg-slate-900/95 border-blue-500/50 text-blue-200'
+            }`}>
+              {notification.type === 'success' ? (
+                <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+              ) : notification.type === 'error' ? (
+                <AlertCircle className="h-5 w-5 text-rose-400 shrink-0 mt-0.5" />
+              ) : (
+                <Sparkles className="h-5 w-5 text-blue-400 shrink-0 mt-0.5" />
+              )}
+              <div className="flex-1 text-xs">
+                <p className="font-semibold text-slate-100 leading-snug">{notification.message}</p>
+              </div>
+              <button
+                onClick={() => setNotification(null)}
+                className="text-slate-400 hover:text-slate-200"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Floating Quick Switcher to Admin Panel */}
+        <div className="fixed bottom-4 left-4 z-40 hidden sm:block">
+          <button
+            onClick={() => handleSwitchMode('admin')}
+            className="flex items-center gap-2 rounded-full border border-amber-500/40 bg-slate-950/90 backdrop-blur-md px-3.5 py-2 text-xs font-bold text-amber-300 shadow-xl hover:bg-slate-900 hover:border-amber-400 transition cursor-pointer"
+            title="Ir al Panel de Administración de la Boutique"
+          >
+            <LayoutDashboard className="h-4 w-4 text-amber-400" />
+            <span>Panel Administrador (Boutique OS)</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ----------------------------------------------------
+  // ADMIN PANEL MODE (Full OS: Orders, Inventory, Reports, Workspace)
+  // ----------------------------------------------------
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500/30 selection:text-amber-200 pb-16 lg:pb-0">
       {/* Toast Notification */}
@@ -797,6 +944,7 @@ export default function App() {
           setSelectedProductForNewOrder(null);
           setIsFastOrderModalOpen(true);
         }}
+        onOpenPortal={() => handleSwitchMode('portal')}
         settings={settings}
         currentRole={currentRole}
         onChangeRole={setCurrentRole}
@@ -1085,6 +1233,18 @@ export default function App() {
           Sistema Operativo de Control de Encargos, Almacén, Clientes y Google Workspace.
         </p>
       </footer>
+
+      {/* Floating Quick Switcher to Public Portal */}
+      <div className="fixed bottom-4 left-4 z-40 hidden sm:block">
+        <button
+          onClick={() => handleSwitchMode('portal')}
+          className="flex items-center gap-2 rounded-full border border-indigo-500/40 bg-slate-950/90 backdrop-blur-md px-3.5 py-2 text-xs font-bold text-indigo-300 shadow-xl hover:bg-slate-900 hover:border-indigo-400 transition cursor-pointer"
+          title="Ver y probar el Portal Público de Pedidos como cliente"
+        >
+          <ShoppingBag className="h-4 w-4 text-indigo-400" />
+          <span>Ver Portal de Clientes (Público)</span>
+        </button>
+      </div>
     </div>
   );
 }

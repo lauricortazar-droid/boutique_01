@@ -56,12 +56,22 @@ export interface Product {
   reservedStock: number;
   minStock: number;
   imageUrl: string;
+  galleryImages?: string[];
   active: boolean;
+  visibleInPortal?: boolean;
+  associatedZones?: ZoneFGDLL[];
   isCustomizable: boolean;
   estimatedPreparationDays: number;
   supplierId?: string;
   internalNotes?: string;
   variants: ProductVariant[];
+  // Anniversary attributes
+  isAnniversary?: boolean;
+  anniversaryEdition?: string;
+  anniversaryYear?: number;
+  anniversaryTag?: 'ANIVERSARIO' | 'EDICIÓN ESPECIAL' | 'EDICIÓN LIMITADA' | 'PREVENTA';
+  anniversaryDeadline?: string;
+  maxPerCustomer?: number;
 }
 
 export interface Customer {
@@ -179,11 +189,73 @@ export interface Order {
   payments: PaymentRecord[];
   history: OrderStatusHistoryItem[];
   internalNotes?: string;
+  origin?: 'portal' | 'admin';
+  paymentProofUrl?: string;
+  isGroupOrder?: boolean;
+  groupResponsible?: string;
   // Google Workspace tracking
   googleEventId?: string;
   googleDocUrl?: string;
   googleTaskId?: string;
   googleSheetsSynced?: boolean;
+}
+
+export interface AnniversarySettings {
+  active: boolean;
+  editionName: string; // e.g. "XVIII Aniversario"
+  editionNumber: number; // e.g. 18
+  year: number; // e.g. 2026
+  heroTitle: string;
+  heroSubtitle: string;
+  bannerImageUrl: string;
+  eventDate: string;
+  preorderStartDate: string;
+  deadlineDate: string;
+  estimatedDeliveryDate: string;
+  featuredProductIds: string[];
+}
+
+export interface PortalSectionsConfig {
+  hero: boolean;
+  anniversary: boolean;
+  categories: boolean;
+  featured: boolean;
+  newArrivals: boolean;
+  customizable: boolean;
+  policies: boolean;
+}
+
+export interface PortalSettings {
+  portalEnabled: boolean;
+  whatsappNumber: string; // default "+1 999 359 8514"
+  whatsappCleanNumber: string; // "19993598514"
+  bankDetails: {
+    bankName: string;
+    accountHolder: string;
+    clabe: string;
+    accountNumber?: string;
+    paymentInstructions?: string;
+  };
+  pickupLocation: string;
+  orderPolicies: string;
+  anniversary: AnniversarySettings;
+  sectionsConfig?: PortalSectionsConfig;
+  heroHeadline?: string;
+  heroSubheadline?: string;
+  heroBadge?: string;
+}
+
+export interface CartItem {
+  id: string;
+  productId: string;
+  product: Product;
+  variantId?: string;
+  variant?: ProductVariant;
+  variantDetails?: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  customization?: OrderItemCustomization;
 }
 
 export interface Supplier {
@@ -232,6 +304,7 @@ export interface BoutiqueSettings {
     workspace: boolean;
     settings: boolean;
   };
+  portal: PortalSettings;
 }
 
 export interface WorkspaceSyncLog {

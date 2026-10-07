@@ -31,6 +31,7 @@ interface NavbarProps {
   lowStockCount: number;
   onOpenGlobalSearch: () => void;
   onOpenNewOrder: () => void;
+  onOpenPortal?: () => void;
   settings: BoutiqueSettings;
   currentRole: UserRole;
   onChangeRole: (role: UserRole) => void;
@@ -48,6 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   lowStockCount,
   onOpenGlobalSearch,
   onOpenNewOrder,
+  onOpenPortal,
   settings,
   currentRole,
   onChangeRole
@@ -103,6 +105,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Search className="h-3.5 w-3.5 text-amber-400" />
               <span className="hidden md:inline text-[11px] text-slate-400">Búsqueda rápida...</span>
             </button>
+
+            {/* Switch to Public Portal Button */}
+            {onOpenPortal && (
+              <button
+                onClick={onOpenPortal}
+                className="flex items-center gap-1.5 rounded-xl border border-indigo-500/40 bg-indigo-950/40 px-3 py-1.5 text-xs font-bold text-indigo-300 hover:bg-indigo-900/60 hover:text-indigo-200 transition cursor-pointer"
+                title="Abrir Portal de Pedidos (Vista Cliente / Miembros)"
+              >
+                <ShoppingBag className="h-3.5 w-3.5 text-indigo-400" />
+                <span className="hidden md:inline">Portal de Pedidos</span>
+              </button>
+            )}
 
             {/* Quick "+ Pedido" Button */}
             <button
@@ -253,6 +267,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <option value="consulta">Solo Consulta</option>
               </select>
             </div>
+
+            {onOpenPortal && (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenPortal();
+                }}
+                className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl bg-indigo-950/60 border border-indigo-500/40 py-2.5 text-xs font-bold text-indigo-300 cursor-pointer"
+              >
+                <ShoppingBag className="h-4 w-4" /> Ver Portal Público de Pedidos (Clientes)
+              </button>
+            )}
           </div>
         )}
       </header>
